@@ -375,10 +375,10 @@ function track(side, parent) {
 
 // ---------------------------------------------------------------- the pink curved slide: a solid half-pipe with thick walls,
 // wider and deeper at the top where you sit down, swept along the curve and closed at both ends
-function slideMesh(curve, seg = 72) {
-  const RI = 1.85, T = 0.26, N = 16;                            // inner radius, wall thickness (studs), points round the curve
+function slideMesh(curve, { RI = 1.85, seg = 72, flume = false } = {}) {
+  const T = 0.26, N = 16;                                      // wall thickness (studs), points round the curve; RI the inner radius
   const prof = t => {                                          // closed outline: across, up (0 is the bottom of the channel)
-    const w = 1 + 0.12 * Math.max(0, 1 - t / 0.3) ** 2, hw = 0.25 + 0.6 * Math.max(0, 1 - t / 0.5);
+    const w = flume ? 1 : 1 + 0.12 * Math.max(0, 1 - t / 0.3) ** 2, hw = flume ? 0.45 + 0.35 * Math.max(0, 1 - t / 0.15) : 0.25 + 0.6 * Math.max(0, 1 - t / 0.5);
     const ri = RI * w, ro = ri + T, c = ri, out = [];
     out.push([-ri, c + hw]);
     for (let i = 0; i <= N; i++) { const a = Math.PI + Math.PI * i / N; out.push([Math.cos(a) * ri, c + Math.sin(a) * ri]); }
@@ -433,7 +433,8 @@ function rail(parent, pts, h = 2.6) {
 function personStuds(look) { const f = figure(look); f.scale.setScalar(1 / S); return f; }
 
 // ---------------------------------------------------------------- the whole machine
-export function build({ band = true, rider = true, ladder = false } = {}) {
+// flume: the game's longer water slide, sweeping out behind in an easy S (the drawings keep the LEGO model's short one)
+export function build({ band = true, rider = true, ladder = false, flume = false } = {}) {
   const M = new THREE.Group(); M.name = 'bathing_machine';
   const L = new THREE.Group(); L.scale.setScalar(S); M.add(L);     // stud units inside
   const parts = {}, points = {};
@@ -532,14 +533,25 @@ export function build({ band = true, rider = true, ladder = false } = {}) {
   const sl = part('slide');
   rail(sl, [[-0.85, C(3), -6.2], [-0.85, C(3), -8.85], [0.9, C(3), -8.85]]);
   rail(sl, [[2.85, C(3), -6.2], [2.85, C(3), -7.6]]);
-  const sTop = new THREE.Vector3(3.4, C(2) + 0.15, -9.6);
-  const curve = new THREE.CatmullRomCurve3([sTop, new THREE.Vector3(3.7, C(2) - 0.2, -11.0), new THREE.Vector3(4.2, 6.7, -12.5),
-    new THREE.Vector3(4.6, 4.7, -13.3), new THREE.Vector3(4.8, 3.3, -14.0), new THREE.Vector3(4.9, 2.7, -15.0)], false, 'centripetal');
-  sl.add(slideMesh(curve));
-  const strutA = new THREE.Vector3(4.6, TOP0 - 0.5, -11.8), strutB = curve.getPointAt(0.55).add(new THREE.Vector3(0, -0.6, 0));
-  const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, strutA.distanceTo(strutB), 8), mat(COL.chrome, CHROME));
-  strut.position.copy(strutA).lerp(strutB, 0.5); strut.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), strutB.clone().sub(strutA).normalize()); sl.add(strut);
-  points.slide = { getPointAt: t => curve.getPointAt(t).multiplyScalar(S), getTangentAt: t => curve.getTangentAt(t) };
+  const sTop = new THREE.Vector3(3.4, C(2) + 0.15, -9.6), RI = flume ? 1.6 : 1.85;
+  const curve = flume
+    ? new THREE.CatmullRomCurve3([sTop, new THREE.Vector3(4.3, C(2) - 0.3, -11.3), new THREE.Vector3(6.2, 7.0, -13.2), new THREE.Vector3(8.6, 6.0, -14.6),
+      new THREE.Vector3(10.6, 4.9, -16.6), new THREE.Vector3(11.4, 3.8, -19.4), new THREE.Vector3(11.2, 2.9, -22.0), new THREE.Vector3(10.8, 2.5, -24.2)], false, 'centripetal')
+    : new THREE.CatmullRomCurve3([sTop, new THREE.Vector3(3.7, C(2) - 0.2, -11.0), new THREE.Vector3(4.2, 6.7, -12.5),
+      new THREE.Vector3(4.6, 4.7, -13.3), new THREE.Vector3(4.8, 3.3, -14.0), new THREE.Vector3(4.9, 2.7, -15.0)], false, 'centripetal');
+  sl.add(slideMesh(curve, { RI, seg: flume ? 140 : 72, flume }));
+  const strut = (a, b, r = 0.12) => {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, a.distanceTo(b), 8), mat(COL.chrome, CHROME));
+    m.position.copy(a).lerp(b, 0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); m.castShadow = true; sl.add(m);
+  };
+  const under = t => curve.getPointAt(t).add(new THREE.Vector3(0, -0.55, 0));
+  if (flume) {                                                  // struts from the back corner of the deck hold it up
+    const base = new THREE.Vector3(4.7, TOP0 - 0.45, -11.7), base2 = new THREE.Vector3(2.0, TOP0 - 0.45, -11.9);
+    strut(base, under(0.3)); strut(base, under(0.52), 0.14); strut(base2, under(0.52), 0.1); strut(under(0.3), under(0.52), 0.08);
+  } else strut(new THREE.Vector3(4.6, TOP0 - 0.5, -11.8), curve.getPointAt(0.55).add(new THREE.Vector3(0, -0.6, 0)));
+  points.slideRI = RI * S; points.slideFlume = flume;
+  const tt = t => Math.min(Math.max(t, 0), 0.9999);                   // (a hair short of the end: getPointAt(1) can land just past it)
+  points.slide = { getPointAt: t => curve.getPointAt(tt(t)).multiplyScalar(S), getTangentAt: t => curve.getTangentAt(tt(t)) };
   points.slideTop = sTop.clone().multiplyScalar(S);
   points.whiteTop = new THREE.Vector3(0, C(2) * S, -10 * S);           // standing on the white step, beside the slide
   // (the game adds a ladder up the back to the white step, so people can climb to the slide; the LEGO model has none)

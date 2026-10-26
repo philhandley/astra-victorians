@@ -171,8 +171,8 @@ export class Person {
       const gy = ctx.ground(this.pos.x, this.pos.z);
       if (this.floating && gy > ctx.water - 0.45) this.dropRing();                 // (stand up in the shallows)
       this.swimming = !this.floating && gy < ctx.water - this.height * 0.6;
-      this.pos.y = this.floating ? Math.max(gy, ctx.water - 0.42 + Math.sin(this.t * 2.4) * 0.05) : this.swimming ? ctx.water - this.height * 0.66 + Math.sin(this.t * 2.2) * 0.04 : gy;
-      if (this.ring?.visible) this.ring.position.y = this.floating ? 0.4 : 0.62;
+      this.pos.y = this.floating ? Math.max(gy, ctx.water - 0.55 + Math.sin(this.t * 2.4) * 0.05) : this.swimming ? ctx.water - this.height * 0.66 + Math.sin(this.t * 2.2) * 0.04 : gy;
+      if (this.ring?.visible) this.ring.position.y = 0.6;                       // (round the hips: sitting in it)
       this.g.rotation.y = this.heading;
       if (moving && ['dance', 'fan', 'wave'].includes(this.pose)) this.pose = 'walk';
       if (this.floating) this.pose = 'float';
@@ -197,7 +197,7 @@ export class Person {
       case 'cheer': lift = Math.abs(Math.sin(t * 7)) * 0.25; A.x = B.x = -2.9; A.z = -0.35; B.z = 0.35; break;
       case 'fan': B.x = -2.0 + Math.sin(t * 16) * 0.35; B.z = 0.5; A.x = -0.2; break;
       case 'wave': B.x = -2.9; B.z = 0.35 + Math.sin(t * 10) * 0.45; break;
-      case 'float': L.x = R.x = -1.2; A.x = -0.9 + Math.sin(t * 4) * 0.5; B.x = -0.9 - Math.sin(t * 4) * 0.5; A.z = -0.6; B.z = 0.6; break;   // sitting in the ring, paddling
+      case 'float': L.x = R.x = -1.4; A.x = -0.9 + Math.sin(t * 4) * 0.5; B.x = -0.9 - Math.sin(t * 4) * 0.5; A.z = -0.6; B.z = 0.6; break;   // sitting in the ring, paddling
       case 'ride': L.x = R.x = -1.45; A.x = B.x = -2.9; A.z = -0.5; B.z = 0.5; break;                                                    // arms up on the slide
       case 'climb': { const s = Math.sin(t * 8); A.x = -2.6 + s * 0.4; B.x = -2.6 - s * 0.4; L.x = -0.6 + s * 0.5; R.x = -0.6 - s * 0.5; break; }
       case 'fall': A.x = B.x = -2.8; A.z = -0.6; B.z = 0.6; L.x = -0.5; R.x = 0.3; break;

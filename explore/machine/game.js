@@ -63,7 +63,7 @@ world.camera.far = 600; world.camera.updateProjectionMatrix();
 const sound = new Sound();
 if (q.has('mute')) sound.setOn(false);
 const beach = makeBeach(world.scene);
-const M = build({ ladder: true });
+const M = build({ ladder: true, flume: true });
 world.scene.add(M);
 const P = M.userData.points;
 studioEnvironment(world.renderer).then(env => { world.scene.environment = env; });
@@ -95,7 +95,11 @@ const [ax, az, ah] = (q.get('at') || '0,7,0').split(',').map(Number);
 const car = { x: ax, z: az, h: ah || 0, v: 0, w: 0, target: null, rev: false };
 const BOUNDS = { x0: -38, x1: 38, z0: -26, z1: 12.5 }, MAXD = 1.85, HALF_TRACK = 2.2;
 // where the machine is solid at people height, in its own metres: the tracks, deck and stage; the low end of the slide
-const FOOT = [{ x0: -3.3, x1: 3.3, z0: -5.0, z1: 4.0 }, { x0: 0.9, x1: 3.1, z0: -6.6, z1: -5.0 }];
+const FOOT = [{ x0: -3.3, x1: 3.3, z0: -5.0, z1: 4.0 }, (() => {
+  const r = { x0: Infinity, x1: -Infinity, z0: Infinity, z1: -Infinity }, w = P.slideRI + 0.15;
+  for (let k = 0; k <= 100; k++) { const q = P.slide.getPointAt(k / 100); if (q.y > 2.1) continue; r.x0 = Math.min(r.x0, q.x - w); r.x1 = Math.max(r.x1, q.x + w); r.z0 = Math.min(r.z0, q.z - w); r.z1 = Math.max(r.z1, q.z + w); }
+  return r;                                                     // (the low end of the slide, below head height)
+})()];
 const PR = 0.4;                                                // the room a person takes up
 const safety = { closest: Infinity, log: [] };                          // the nearest anyone has been after a move (tests)
 const pad = { f: 0, t: 0 };
@@ -362,7 +366,14 @@ function avoid(x, z, p) {
       if (k === 1) p.sides[k] = px ? (uz < 0 ? 1 : -1) : ((gx - lx) * ux >= 0 ? 1 : -1);          // round the far end of the slide, never into the body
       else p.sides[k] = Math.abs(along) > 0.5 ? Math.sign(along) : (cx * ux + cz * uz >= 0 ? 1 : -1);
     }
-    if (p) { ux *= p.sides[k]; uz *= p.sides[k]; }
+    if (p) {
+      ux *= p.sides[k]; uz *= p.sides[k];
+      // if that way round runs into another part (the body and the slide's end can touch), go round the other way
+      const ax = lx + ux * 0.9, az = lz + uz * 0.9;
+      if (performance.now() > (p.flipAt || 0) && rects.some((o, j) => j !== k && ax > o.x0 && ax < o.x1 && az > o.z0 && az < o.z1)) {
+        p.sides[k] *= -1; ux = -ux; uz = -uz; p.flipAt = performance.now() + 4000;
+      }
+    }
     const kk = out === 0 ? 1 : 0.25, tx = px * kk + ux * 0.75, tz = pz * kk + uz * 0.75, c = Math.cos(car.h), s2 = Math.sin(car.h);
     return { x: tx * c + tz * s2, z: -tx * s2 + tz * c };
   }
@@ -472,12 +483,12 @@ const slideWater = (() => {
   g.fillStyle = 'rgba(255,255,255,0.18)'; g.fillRect(0, 0, 64, 128);
   for (let i = 0; i < 26; i++) { g.strokeStyle = 'rgba(255,255,255,' + (0.35 + Math.random() * 0.5).toFixed(2) + ')'; g.lineWidth = 1 + Math.random() * 2.5; const x = Math.random() * 64, y = Math.random() * 128; g.beginPath(); g.moveTo(x, y); g.bezierCurveTo(x + 4, y + 10, x - 4, y + 20, x + 2, y + 30); g.stroke(); }
   const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.colorSpace = THREE.SRGBColorSpace;
-  const seg = 70, across = 8, half = 0.5, ri0 = 1.85 * 0.4, pos = [], uv = [], idx = [], hh = new THREE.Vector3(0, 0, -1);
+  const seg = 140, across = 8, half = P.slideRI * 0.7, ri0 = P.slideRI, pos = [], uv = [], idx = [], hh = new THREE.Vector3(0, 0, -1);
   for (let k = 0; k <= seg; k++) {
     const t = k / seg, pt = P.slide.getPointAt(t), tan = P.slide.getTangentAt(t), hz = new THREE.Vector3(tan.x, 0, tan.z);
     if (hz.lengthSq() > 1e-4) hh.lerp(hz.normalize(), k ? 0.5 : 1).normalize();
     const side = new THREE.Vector3(-hh.z, 0, hh.x), nrm = new THREE.Vector3().crossVectors(side, tan).normalize();
-    const r = ri0 * (1 + 0.12 * Math.max(0, 1 - t / 0.3) ** 2);
+    const r = P.slideFlume ? ri0 : ri0 * (1 + 0.12 * Math.max(0, 1 - t / 0.3) ** 2);
     for (let j = 0; j <= across; j++) {
       const off = (j / across * 2 - 1) * half, lift = r - Math.sqrt(r * r - off * off) - 0.04 + 0.025;
       const v = pt.clone().addScaledVector(side, off).addScaledVector(nrm, lift); pos.push(v.x, v.y, v.z); uv.push(j / across, t * 6);
@@ -530,14 +541,14 @@ function ride(R, dt) {
       sound.whoosh(); sound.whee(0.85 + (p.id % 5) * 0.1);
     }
   } else if (R.phase === 'slide') {
-    R.u = Math.min(1, R.u + dt * (0.3 + 1.6 * R.u));
+    R.u = Math.min(1, R.u + dt * (0.16 + 0.55 * R.u));
     R.turn += R.spin * dt;
     const pt = P.slide.getPointAt(R.u), tan = P.slide.getTangentAt(R.u);
     p.g.position.copy(pt); p.g.rotation.set(-Math.asin(THREE.MathUtils.clamp(tan.y, -1, 1)) * 0.3, Math.atan2(tan.x, tan.z) + R.turn, 0, 'YXZ');
     if (Math.random() < 0.5) { const w = p.g.getWorldPosition(new THREE.Vector3()); emit(w.x, w.y + 0.2, w.z, (Math.random() - 0.5) * 1.6, 1.2 + Math.random() * 1.5, (Math.random() - 0.5) * 1.6, 1, 0.6, false); }
     if (R.u >= 1) {
       world.scene.attach(p.g);
-      R.v = new THREE.Vector3().copy(tan).transformDirection(M.matrixWorld).multiplyScalar(5.2); R.v.y += 2.4;    // off the end with a hop
+      R.v = new THREE.Vector3().copy(tan).transformDirection(M.matrixWorld).multiplyScalar(5.5); R.v.y += 2.6;    // off the end with a hop
       R.phase = 'fly'; p.pose = 'ride'; R.twirl = (Math.random() < 0.5 ? -1 : 1) * (6 + Math.random() * 4);
     }
   } else if (R.phase === 'fly') {
@@ -545,7 +556,7 @@ function ride(R, dt) {
     const gy = ground(p.pos.x, p.pos.z), deep = WATER - gy > 0.55;
     if (deep && p.pos.y < WATER - 0.35) {
       splash(p.pos.x, p.pos.z, 1.6); sound.cheer();
-      p.locked = false; p.state = 'swim'; p.floating = true; p.pose = 'float'; p.pos.y = WATER - 0.42; p.heading = p.g.rotation.y; p.g.rotation.set(0, p.heading, 0);
+      p.locked = false; p.state = 'swim'; p.floating = true; p.pose = 'float'; p.pos.y = WATER - 0.55; p.heading = p.g.rotation.y; p.g.rotation.set(0, p.heading, 0);
       if (p.hot) cool(p); else p.showIcon('cool', 2);
       const x = p.pos.x; p.walkTo(x + (Math.random() - 0.5) * 5, shoreZ(x) + 1.5);
       for (const o of people) if (onBeach(o) && o !== p && o.state === 'wander' && o.pos.distanceTo(p.pos) < 12 && !o.evade) { o.pose = 'cheer'; o.cheerT = 1.2; }
