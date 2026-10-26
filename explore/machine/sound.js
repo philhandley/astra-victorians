@@ -1,41 +1,41 @@
 // Sounds for the bathing-machine game, all made in the browser with WebAudio (no files): the engine hum, splashes,
-// the slide's whoosh, the horn, cheers, the fountains, and the band's rock song (drums, bass, guitar chords, a tune).
+// the slide's whoosh, the horn, cheers, the fountains, and the band's song (in the style of alt-J: toms, sub bass, a
+// mallet arpeggio and soft voices).
 export class Sound {
-  constructor() { this.on = true; this.ctx = null; this.bandOn = false; this.bpm = 124; }
+  constructor() { this.on = true; this.ctx = null; this.bandOn = false; this.bpm = 104; }
   ensure() {
     if (!this.ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
-      const c = this.ctx = new AC();
-      this.master = c.createGain(); this.master.gain.value = this.on ? 0.7 : 0; this.master.connect(c.destination);
-      const len = c.sampleRate * 2, buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-      this.noiseBuf = buf;
-      // the engine: two low notes through a soft filter, louder when it moves
-      const eg = this.engineGain = c.createGain(); eg.gain.value = 0;
-      const lp = this.engineLP = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 260;
-      this.engineOsc = [c.createOscillator(), c.createOscillator()];
-      this.engineOsc[0].type = 'sawtooth'; this.engineOsc[0].frequency.value = 46;
-      this.engineOsc[1].type = 'square'; this.engineOsc[1].frequency.value = 69;
-      for (const o of this.engineOsc) { o.connect(lp); o.start(); }
-      const rumble = this.noise(true); const rb = c.createBiquadFilter(); rb.type = 'lowpass'; rb.frequency.value = 140; rumble.connect(rb); rb.connect(lp);
-      lp.connect(eg); eg.connect(this.master);
-      // the fountains: a steady hiss
-      const sg = this.sprayGain = c.createGain(); sg.gain.value = 0;
-      const sn = this.noise(true), bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 0.6;
-      sn.connect(bp); bp.connect(sg); sg.connect(this.master);
-      // the band bus, with a little echo
-      this.bandBus = c.createGain(); this.bandBus.gain.value = 0.55;
-      const dl = c.createDelay(); dl.delayTime.value = 0.18; const fb = c.createGain(); fb.gain.value = 0.18;
-      this.bandBus.connect(this.master); this.bandBus.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(this.master);
-      this.dist = c.createWaveShaper(); this.dist.curve = (() => { const n = 1024, k = 24, a = new Float32Array(n); for (let i = 0; i < n; i++) { const x = i / n * 2 - 1; a[i] = (1 + k) * x / (1 + k * Math.abs(x)); } return a; })();
-      const glp = c.createBiquadFilter(); glp.type = 'lowpass'; glp.frequency.value = 2400;
-      this.guitarIn = c.createGain(); this.guitarIn.gain.value = 0.5; this.guitarIn.connect(this.dist); this.dist.connect(glp);
-      const gOut = c.createGain(); gOut.gain.value = 0.22; glp.connect(gOut); gOut.connect(this.bandBus);
+      this.build(new AC());
     }
     if (this.ctx.state === 'suspended') this.ctx.resume();
     if (this.bandOn && !this.timer) this.band(true);
     return this.ctx;
+  }
+  build(c) {                                        // (an OfflineAudioContext works too, for testing the song)
+    this.ctx = c;
+    this.master = c.createGain(); this.master.gain.value = this.on ? 0.7 : 0; this.master.connect(c.destination);
+    const len = c.sampleRate * 2, buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    this.noiseBuf = buf;
+    // the engine: two low notes through a soft filter, louder when it moves
+    const eg = this.engineGain = c.createGain(); eg.gain.value = 0;
+    const lp = this.engineLP = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 260;
+    this.engineOsc = [c.createOscillator(), c.createOscillator()];
+    this.engineOsc[0].type = 'sawtooth'; this.engineOsc[0].frequency.value = 46;
+    this.engineOsc[1].type = 'square'; this.engineOsc[1].frequency.value = 69;
+    for (const o of this.engineOsc) { o.connect(lp); o.start(); }
+    const rumble = this.noise(true); const rb = c.createBiquadFilter(); rb.type = 'lowpass'; rb.frequency.value = 140; rumble.connect(rb); rb.connect(lp);
+    lp.connect(eg); eg.connect(this.master);
+    // the fountains: a steady hiss
+    const sg = this.sprayGain = c.createGain(); sg.gain.value = 0;
+    const sn = this.noise(true), bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 0.6;
+    sn.connect(bp); bp.connect(sg); sg.connect(this.master);
+    // the band bus, with a little echo
+    this.bandBus = c.createGain(); this.bandBus.gain.value = 0.55;
+    const dl = c.createDelay(); dl.delayTime.value = 0.18; const fb = c.createGain(); fb.gain.value = 0.18;
+    this.bandBus.connect(this.master); this.bandBus.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(this.master);
   }
   setOn(v) { this.on = v; if (this.master) this.master.gain.setTargetAtTime(v ? 0.7 : 0, this.ctx.currentTime, 0.05); }
   noise(loop = false) { const s = this.ctx.createBufferSource(); s.buffer = this.noiseBuf; s.loop = loop; if (loop) s.start(); return s; }
@@ -85,13 +85,52 @@ export class Sound {
     const n = this.noise(), f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1500; f.Q.value = 0.8;
     n.connect(f); this.env(f, t, 0.08, 0.12, 0.9).connect(this.master); n.start(t); n.stop(t + 1.2);
   }
+  beep() {                                          // the reversing beeper, like a real truck
+    if (!this.ctx) return;
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'square'; o.frequency.value = 1180;
+    const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2600; o.connect(f);
+    const g = c.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.06, t + 0.01); g.gain.setValueAtTime(0.06, t + 0.22); g.gain.linearRampToValueAtTime(0, t + 0.25);
+    f.connect(g); g.connect(this.master); o.start(t); o.stop(t + 0.3);
+  }
+  toot() {                                          // a short polite toot: please step aside
+    if (!this.ensure()) return;
+    const c = this.ctx, t = c.currentTime;
+    for (const fr of [440, 554]) {
+      const o = c.createOscillator(); o.type = 'square'; o.frequency.value = fr;
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1200; o.connect(lp);
+      const g = c.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.06, t + 0.02); g.gain.setValueAtTime(0.06, t + 0.16); g.gain.linearRampToValueAtTime(0, t + 0.2);
+      lp.connect(g); g.connect(this.master); o.start(t); o.stop(t + 0.25);
+    }
+  }
+  fanfare() {                                       // a job done (big = all of them)
+    if (!this.ensure()) return;
+    const c = this.ctx, t = c.currentTime;
+    [523, 659, 784, 1047].forEach((fr, i) => {
+      const o = c.createOscillator(); o.type = 'triangle'; o.frequency.value = fr;
+      this.env(o, t + i * 0.09, 0.01, 0.16, 0.35 + (i === 3 ? 0.4 : 0)).connect(this.master); o.start(t + i * 0.09); o.stop(t + i * 0.09 + 0.9);
+    });
+  }
+  whee(pitch = 1) {                                 // a little voice going 'wheee!' down the slide
+    if (!this.ensure()) return;
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(420 * pitch, t); o.frequency.exponentialRampToValueAtTime(760 * pitch, t + 0.35); o.frequency.exponentialRampToValueAtTime(520 * pitch, t + 1.1);
+    const env = c.createGain(); env.gain.setValueAtTime(0.0001, t); env.gain.exponentialRampToValueAtTime(0.09, t + 0.08); env.gain.setValueAtTime(0.09, t + 0.8); env.gain.exponentialRampToValueAtTime(0.0001, t + 1.2);
+    for (const [f, g] of [[300, 1], [2300, 0.5], [3000, 0.25]]) { const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = 6; const gg = c.createGain(); gg.gain.value = g; o.connect(bp); bp.connect(gg); gg.connect(env); }
+    env.connect(this.master); o.start(t); o.stop(t + 1.25);
+  }
+  bonk() {                                          // a beach ball kicked or bumped
+    if (!this.ensure()) return;
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(320, t); o.frequency.exponentialRampToValueAtTime(140, t + 0.12);
+    this.env(o, t, 0.004, 0.3, 0.16).connect(this.master); o.start(t); o.stop(t + 0.22);
+  }
   pop() {
     if (!this.ensure()) return;
     const c = this.ctx, t = c.currentTime, o = c.createOscillator(); o.type = 'sine';
     o.frequency.setValueAtTime(500, t); o.frequency.exponentialRampToValueAtTime(1100, t + 0.08);
     this.env(o, t, 0.005, 0.18, 0.12).connect(this.master); o.start(t); o.stop(t + 0.2);
   }
-  // ---------------------------------------------------------------- the band: a cheerful four-chord rock song
+  // ---------------------------------------------------------------- the band (the song itself is play16, below)
   band(on) {
     this.bandOn = on; this.bandT0 = performance.now() / 1000;
     if (!on) { clearInterval(this.timer); this.timer = null; return; }
@@ -107,41 +146,62 @@ export class Sound {
     if (this.ctx && this.timer && this.ctx.state === 'running') return (this.ctx.currentTime - this.bandT0c) * this.bpm / 60;
     return (performance.now() / 1000 - (this.bandT0 || 0)) * this.bpm / 60;
   }
+  // An alt-J flavoured song (Breezeblocks, Tessellate): no cymbals at all, just deep floor toms, rim clicks and claps
+  // in a 3+3+2 groove; a big round sub bass; a plucked mallet arpeggio; and soft 'ooh' and 'ah' voices singing the
+  // chords and a little tune, over D minor, B flat, F, C.
+  voice(t, midi, dur, vowel, gain, bus) {
+    const c = this.ctx, hz = 440 * Math.pow(2, (midi - 69) / 12);
+    const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = hz;
+    const vib = c.createOscillator(), vg = c.createGain(); vib.frequency.value = 5.2; vg.gain.value = hz * 0.006; vib.connect(vg); vg.connect(o.frequency);
+    const F = vowel === 'oo' ? [[320, 1], [800, 0.35], [2300, 0.12]] : [[700, 1], [1150, 0.55], [2500, 0.18]];
+    const env = c.createGain(); env.gain.setValueAtTime(0.0001, t); env.gain.exponentialRampToValueAtTime(gain, t + Math.min(0.25, dur * 0.3)); env.gain.setValueAtTime(gain, t + dur * 0.7); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    for (const [f, g] of F) { const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = 7; const gg = c.createGain(); gg.gain.value = g; o.connect(bp); bp.connect(gg); gg.connect(env); }
+    env.connect(bus); o.start(t); vib.start(t); o.stop(t + dur + 0.05); vib.stop(t + dur + 0.05);
+  }
+  pluck(t, midi, gain, bus) {
+    const c = this.ctx, hz = 440 * Math.pow(2, (midi - 69) / 12);
+    for (const [mul, g, d] of [[1, 1, 0.45], [2, 0.35, 0.22], [3.01, 0.12, 0.12]]) {
+      const o = c.createOscillator(); o.type = mul === 1 ? 'triangle' : 'sine'; o.frequency.value = hz * mul;
+      this.env(o, t, 0.003, gain * g, d).connect(bus); o.start(t); o.stop(t + d + 0.05);
+    }
+  }
+  tom(t, f0, f1, gain, bus) {
+    const c = this.ctx, o = c.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + 0.28);
+    this.env(o, t, 0.003, gain, 0.42).connect(bus); o.start(t); o.stop(t + 0.5);
+    const n = this.noise(), lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900; n.connect(lp); this.env(lp, t, 0.002, gain * 0.25, 0.06).connect(bus); n.start(t); n.stop(t + 0.1);
+  }
   play16(i, t) {
     const c = this.ctx, bus = this.bandBus;
-    const bar = Math.floor(i / 16) % 4, s = i % 16;
-    const roots = [48, 43, 45, 41];                  // C, G, A minor, F
-    const root = roots[bar];
-    const hz = m => 440 * Math.pow(2, (m - 69) / 12);
-    // drums
-    if (s % 8 === 0 || s === 10) { const o = c.createOscillator(); o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.12); this.env(o, t, 0.003, 0.9, 0.28).connect(bus); o.start(t); o.stop(t + 0.35); }
+    const bar = Math.floor(i / 16) % 4, s = i % 16, phrase = Math.floor(i / 64) % 2;
+    const CH = [[50, 53, 57], [46, 50, 53], [53, 57, 60], [48, 52, 55]];     // Dm, Bb, F, C
+    const ch = CH[bar], root = ch[0];
+    // drums: 3+3+2 kicks, floor toms that answer, a rim click on the backbeat, claps on the second phrase
+    if (s === 0 || s === 6) { const o = c.createOscillator(); o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.18); this.env(o, t, 0.003, 0.95, 0.38).connect(bus); o.start(t); o.stop(t + 0.45); }
+    if (s === 12) this.tom(t, 150, 80, 0.55, bus);
+    if (s === 14 || (s === 10 && bar % 2)) this.tom(t, 110, 62, 0.5, bus);
+    if (s === 3 && bar === 3) this.tom(t, 190, 110, 0.4, bus);
     if (s === 4 || s === 12) {
-      const n = this.noise(), f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1300; n.connect(f); this.env(f, t, 0.002, 0.45, 0.16).connect(bus); n.start(t); n.stop(t + 0.25);
-      const o = c.createOscillator(); o.type = 'triangle'; o.frequency.value = 190; this.env(o, t, 0.002, 0.3, 0.09).connect(bus); o.start(t); o.stop(t + 0.12);
+      const n = this.noise(), bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1900; bp.Q.value = 4; n.connect(bp); this.env(bp, t, 0.001, 0.4, 0.035).connect(bus); n.start(t); n.stop(t + 0.06);
+      const o = c.createOscillator(); o.type = 'square'; o.frequency.value = 820; this.env(o, t, 0.001, 0.08, 0.025).connect(bus); o.start(t); o.stop(t + 0.04);
+      if (phrase === 1 && s === 12) for (const d of [0, 0.012, 0.025]) { const m = this.noise(), hp = c.createBiquadFilter(); hp.type = 'bandpass'; hp.frequency.value = 1300; hp.Q.value = 1.2; m.connect(hp); this.env(hp, t + d, 0.001, 0.32, 0.08).connect(bus); m.start(t + d); m.stop(t + d + 0.12); }
     }
-    if (s % 2 === 0) { const n = this.noise(), f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 7500; n.connect(f); this.env(f, t, 0.001, s % 4 === 2 ? 0.16 : 0.09, 0.04).connect(bus); n.start(t); n.stop(t + 0.08); }
-    // bass: eighth notes on the root, up an octave at the end of the bar
-    if (s % 2 === 0) {
-      const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = hz(root - 12 + (s >= 12 ? 12 : 0));
-      const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 520; o.connect(f);
-      this.env(f, t, 0.005, 0.32, 0.2).connect(bus); o.start(t); o.stop(t + 0.25);
+    if (s % 4 === 2) { const n = this.noise(), hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 5000; n.connect(hp); this.env(hp, t, 0.01, 0.035, 0.06).connect(bus); n.start(t); n.stop(t + 0.1); }   // a soft shaker
+    // sub bass on the groove
+    const bassAt = { 0: root - 12, 6: root - 12, 10: root - 5, 14: root };
+    if (s in bassAt) {
+      const hz = 440 * Math.pow(2, (bassAt[s] - 69) / 12), o = c.createOscillator(), o2 = c.createOscillator(); o.type = 'sine'; o2.type = 'triangle'; o.frequency.value = hz; o2.frequency.value = hz * 2;
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 380; o2.connect(lp);
+      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + (s === 14 ? 0.25 : 0.42));
+      o.connect(g); const g2 = c.createGain(); g2.gain.value = 0.18; lp.connect(g2); g2.connect(g); g.connect(bus); o.start(t); o2.start(t); o.stop(t + 0.5); o2.stop(t + 0.5);
     }
-    // guitar: power chords, chugging eighths, a big one on each bar
-    if (s % 2 === 0) {
-      const long = s === 0 ? 0.9 : 0.12;
-      for (const m of [root, root + 7, root + 12]) {
-        const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = hz(m + 12); o.detune.value = (Math.random() - 0.5) * 12;
-        this.env(o, t, 0.004, s === 0 ? 0.5 : 0.28, long).connect(this.guitarIn); o.start(t); o.stop(t + long + 0.05);
-      }
-    }
-    // the tune: a sing-song line over the top
-    const tune = [[72, 0], [74, 4], [76, 6], [74, 10], [71, 0 + 16], [74, 4 + 16], [74, 8 + 16], [72, 12 + 16], [72, 32], [76, 36], [79, 38], [76, 42], [77, 48], [76, 52], [74, 56], [72, 60]];
-    const pos = i % 64;
-    for (const [m, st] of tune) if (st === pos) {
-      const o = c.createOscillator(); o.type = 'square'; o.frequency.value = hz(m);
-      const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2200; o.connect(f);
-      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.02); g.gain.setValueAtTime(0.09, t + 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
-      f.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.55);
-    }
+    // the mallet arpeggio: up and back through the chord, in the same lopsided groove
+    const arp = [0, 3, 6, 8, 11, 14], k = arp.indexOf(s);
+    if (k >= 0) { const notes = [ch[0] + 12, ch[1] + 12, ch[2] + 12, ch[0] + 24, ch[2] + 12, ch[1] + 12]; this.pluck(t, notes[k], 0.22, bus); }
+    // the voices: an 'ooh' chord each bar, and a little 'ah' tune on the second phrase
+    const beat16 = 60 / this.bpm / 4;
+    if (s === 0) for (const m of ch) this.voice(t, m + 12, beat16 * 15.5, 'oo', 0.05, bus);
+    const tune = [[0, 74, 5], [6, 72, 3], [10, 69, 6], [16, 70, 5], [22, 69, 3], [26, 65, 6], [32, 69, 6], [40, 72, 4], [44, 74, 4], [48, 72, 5], [54, 67, 3], [58, 69, 6]];
+    if (phrase === 1) for (const [st, m, len] of tune) if (st === i % 64) this.voice(t, m, beat16 * len, 'ah', 0.09, bus);
   }
 }

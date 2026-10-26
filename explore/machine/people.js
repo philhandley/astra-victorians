@@ -87,6 +87,17 @@ function iconTex(kind) {
     g.fillStyle = '#ffffff'; g.beginPath(); g.ellipse(-14, -2, 7, 12, -0.4, 0, 7); g.fill();
     g.fillStyle = '#123a5c'; g.beginPath(); g.arc(-10, 10, 4.5, 0, 7); g.arc(12, 10, 4.5, 0, 7); g.fill();
     g.strokeStyle = '#123a5c'; g.lineWidth = 4.5; g.beginPath(); g.arc(1, 18, 11, 0.25, Math.PI - 0.25); g.stroke();
+  } else if (kind === 'oops') {                                  // watch out: stepping aside for the machine
+    g.beginPath(); g.arc(0, 0, 50, 0, Math.PI * 2); g.fillStyle = '#ffd23f'; g.fill(); g.lineWidth = 7; g.strokeStyle = '#1f2229'; g.stroke();
+    g.fillStyle = '#1f2229'; g.font = '800 80px Lexend, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('!', 0, 4);
+  } else if (kind === 'hi') {                                    // a speech bubble saying hello
+    g.fillStyle = '#ffffff'; g.strokeStyle = '#1f2229'; g.lineWidth = 6;
+    g.beginPath(); g.ellipse(0, -8, 56, 40, 0, 0, Math.PI * 2); g.moveTo(-14, 26); g.lineTo(-26, 54); g.lineTo(6, 30); g.fill(); g.stroke();
+    g.fillStyle = '#1f2229'; g.font = '800 40px Lexend, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('Hi!', 0, -6);
+  } else if (kind === 'whee') {                                  // a shout while sliding
+    g.fillStyle = '#ffffff'; g.strokeStyle = '#e5519d'; g.lineWidth = 6;
+    g.beginPath(); g.ellipse(0, -6, 60, 38, -0.12, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.fillStyle = '#e5519d'; g.font = 'italic 800 34px Lexend, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('Wheee!', 0, -5);
   } else if (kind === 'note' || kind === 'note2') {
     g.fillStyle = kind === 'note' ? '#7b61ff' : '#ef5b6b'; g.font = 'bold 104px Lexend, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(kind === 'note' ? '♪' : '♫', 0, 4);
   }
@@ -118,18 +129,35 @@ export class Person {
     this.state = 'wander'; this.timer = 0; this.hot = false; this.iconT = 0;
   }
   walkTo(x, z, onArrive = null) { this.target = new THREE.Vector2(x, z); this.onArrive = onArrive; }
+  // a rubber ring round the middle, for the slide and for floating back to the beach
+  giveRing(hex) {
+    if (!this.ring) {
+      const ring = new THREE.Group();
+      const tube = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.15, 10, 28).rotateX(Math.PI / 2), new THREE.MeshStandardMaterial({ color: hex, roughness: 0.3, envMapIntensity: 0.7 }));
+      tube.castShadow = true; ring.add(tube);
+      for (let i = 0; i < 4; i++) { const st = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.152, 10, 5, 0.32).rotateX(Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.3 })); st.rotation.y = i * Math.PI / 2; ring.add(st); }
+      this.ring = ring; this.g.add(ring);
+    }
+    this.ring.children[0].material.color.set(hex); this.ring.visible = true;
+  }
+  dropRing() { if (this.ring) this.ring.visible = false; this.floating = false; }
+  // stepping out of the machine's way comes before anything else they were doing
+  stepAside(x, z, secs = 4) { this.evade = new THREE.Vector2(x, z); this.evadeT = secs; }
   face(x, z) { this.heading = Math.atan2(x - this.pos.x, z - this.pos.z); }
   showIcon(kind, secs = 0) { this.icon.material = iconMat(kind); this.icon.visible = true; this.iconT = secs; }
   // ctx: { ground(x, z), avoid(x, z, person) -> push {x, z} or null, water }
   update(dt, ctx) {
     this.t += dt;
     let moving = false;
-    if (this.target && !this.locked) {
-      const dx = this.target.x - this.pos.x, dz = this.target.y - this.pos.z, d = Math.hypot(dx, dz);
-      if (d < 0.12) {
-        this.target = null; const fn = this.onArrive; this.onArrive = null; fn?.(this);
+    if (this.evade && (this.evadeT -= dt) <= 0) this.evade = null;
+    const goal = this.evade || this.target;
+    if (goal && !this.locked) {
+      const dx = goal.x - this.pos.x, dz = goal.y - this.pos.z, d = Math.hypot(dx, dz);
+      if (d < (this.evade ? 0.3 : 0.12)) {
+        if (this.evade) this.evade = null;
+        else { this.target = null; const fn = this.onArrive; this.onArrive = null; fn?.(this); }
       } else {
-        const sp = (this.swimming ? 0.9 : this.speed) * Math.min(1, d / 0.4 + 0.3);
+        const sp = (this.floating ? 0.75 : this.swimming ? 0.9 : this.speed * (this.evade ? 1.7 : 1)) * Math.min(1, d / 0.4 + 0.3);
         let vx = dx / d * sp, vz = dz / d * sp;
         const push = ctx.avoid?.(this.pos.x, this.pos.z, this);
         if (push) { vx += push.x * 2.6; vz += push.z * 2.6; }
@@ -141,10 +169,15 @@ export class Person {
     }
     if (!this.locked) {
       const gy = ctx.ground(this.pos.x, this.pos.z);
-      this.swimming = gy < ctx.water - this.height * 0.6;
-      this.pos.y = this.swimming ? ctx.water - this.height * 0.66 + Math.sin(this.t * 2.2) * 0.04 : gy;
+      if (this.floating && gy > ctx.water - 0.45) this.dropRing();                 // (stand up in the shallows)
+      this.swimming = !this.floating && gy < ctx.water - this.height * 0.6;
+      this.pos.y = this.floating ? Math.max(gy, ctx.water - 0.42 + Math.sin(this.t * 2.4) * 0.05) : this.swimming ? ctx.water - this.height * 0.66 + Math.sin(this.t * 2.2) * 0.04 : gy;
+      if (this.ring?.visible) this.ring.position.y = this.floating ? 0.4 : 0.62;
       this.g.rotation.y = this.heading;
-      if (!['sit', 'lie', 'dance', 'cheer', 'fan'].includes(this.pose)) this.pose = this.swimming ? 'swim' : moving ? 'walk' : 'idle';
+      if (moving && ['dance', 'fan', 'wave'].includes(this.pose)) this.pose = 'walk';
+      if (this.floating) this.pose = 'float';
+      else if (this.pose === 'float') this.pose = 'idle';
+      if (!['sit', 'lie', 'dance', 'cheer', 'fan', 'wave', 'float'].includes(this.pose)) this.pose = this.swimming ? 'swim' : moving ? 'walk' : 'idle';
     }
     this.animate();
     if (this.iconT > 0) { this.iconT -= dt; if (this.iconT <= 0 && !this.hot) this.icon.visible = false; }
@@ -163,6 +196,9 @@ export class Person {
       case 'dance': { const b = this.beat ?? t * 2, s = Math.sin(b * Math.PI * 2); lift = Math.max(0, s) * 0.12; A.x = -2.6 - s * 0.4; B.x = -2.6 + s * 0.4; A.z = -0.3; B.z = 0.3; L.x = s * 0.2; R.x = -s * 0.2; break; }
       case 'cheer': lift = Math.abs(Math.sin(t * 7)) * 0.25; A.x = B.x = -2.9; A.z = -0.35; B.z = 0.35; break;
       case 'fan': B.x = -2.0 + Math.sin(t * 16) * 0.35; B.z = 0.5; A.x = -0.2; break;
+      case 'wave': B.x = -2.9; B.z = 0.35 + Math.sin(t * 10) * 0.45; break;
+      case 'float': L.x = R.x = -1.2; A.x = -0.9 + Math.sin(t * 4) * 0.5; B.x = -0.9 - Math.sin(t * 4) * 0.5; A.z = -0.6; B.z = 0.6; break;   // sitting in the ring, paddling
+      case 'ride': L.x = R.x = -1.45; A.x = B.x = -2.9; A.z = -0.5; B.z = 0.5; break;                                                    // arms up on the slide
       case 'climb': { const s = Math.sin(t * 8); A.x = -2.6 + s * 0.4; B.x = -2.6 - s * 0.4; L.x = -0.6 + s * 0.5; R.x = -0.6 - s * 0.5; break; }
       case 'fall': A.x = B.x = -2.8; A.z = -0.6; B.z = 0.6; L.x = -0.5; R.x = 0.3; break;
       default: A.x = Math.sin(t * 1.3) * 0.05; B.x = -A.x;

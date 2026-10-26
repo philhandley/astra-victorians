@@ -75,6 +75,7 @@ export class World {
     const a = w / h, cam = this.camera;
     cam.left = -this.halfH * a; cam.right = this.halfH * a; cam.top = this.halfH; cam.bottom = -this.halfH;
     cam.updateProjectionMatrix();
+    if (this.view) { this.view.aspect = a; this.view.updateProjectionMatrix(); }
   }
 
   // Look at a point from the isometric angle (keeps the current turn of the board).
@@ -117,11 +118,11 @@ export class World {
     const r = this.canvas.getBoundingClientRect();
     const p = new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
     const ray = new THREE.Raycaster();
-    ray.setFromCamera(p, this.camera);
+    ray.setFromCamera(p, this.view || this.camera);
     return ray;
   }
   toScreen(v) {
-    const p = v.clone().project(this.camera);
+    const p = v.clone().project(this.view || this.camera);
     const r = this.canvas.getBoundingClientRect();
     return { x: r.left + (p.x + 1) / 2 * r.width, y: r.top + (1 - p.y) / 2 * r.height };
   }
@@ -137,7 +138,7 @@ export class World {
   step(dt) {
     for (const fn of [...this.updaters]) { try { fn(dt); } catch (e) { console.error(e); this.updaters.delete(fn); } }
     this.controls.update();
-    this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.view || this.camera);       // (view: another camera to look through, e.g. riding behind the machine)
     if (this._stats) this._tick(dt);
   }
   // A small readout (frames a second, triangles, draw calls) for checking the app on the real tablet: `?fps`.
