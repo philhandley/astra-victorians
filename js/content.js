@@ -275,6 +275,7 @@ export const CONTENT = {
     time: 'about an hour, plus the model',
     explore: [
       { page: 'bathing-machine.html', preview: 'explore-bathing.jpg', fig: 'Fig. 03', title: "Queen Victoria's bathing machine", desc: 'Modelled at its real size, 12 feet by 7, on the grooved stone rails it really ran on. Wind the winch to roll it down into the sea, go for a swim with the dipper, and cut it open to find the Queen\'s plumbed-in loo.' },
+      { page: 'my-machine.html', preview: 'explore-mymachine.jpg', fig: 'Fig. 04', title: 'Drive my modern bathing machine', desc: 'The machine from the design and the LEGO model, made real: drive it on its tracks down the beach and back it into the sea, send swimmers down the slide, start the rock concert on its stage, and spray the fountains to cool everyone down.' },
     ],
     intro: 'In Victorian times you could not just run into the sea in your costume. You climbed into a wooden hut on wheels, a bathing machine, and a horse pulled you into the water. Queen Victoria had her own. Now design yours.',
     steps: [
@@ -288,6 +289,8 @@ export const CONTENT = {
       { sheet: 'bathing-machine-pictures.html', pdf: 'bathing-machine-pictures.pdf', preview: 'bathing-machine-pictures.jpg', title: 'Pictures of the real machine, and what each part did', desc: 'Queen Victoria\'s own machine photographed from every side, with things to count; then a picture with its parts numbered and a fact about each one, from the roof and the curly iron brackets down to the stone rails.', pages: '2 pages, A4' },
       { sheet: 'draw-bathing-machine.html', pdf: 'draw-bathing-machine.pdf', preview: 'draw-bathing-machine.jpg', title: 'Draw it like an architect: side view and plan', desc: 'The real Osborne machine drawn to scale on a lettered grid, with an empty grid to copy it into, square by square.', pages: '2 pages, A4' },
       { sheet: 'bathing-machine.html', pdf: 'bathing-machine.pdf', preview: 'bathing-machine.jpg', title: 'Design studio, inside view, how it worked, cut-out model, modern ideas', desc: 'A beach to draw your machine on, a cut-away inside view, a labelled diagram of how they worked, a net to cut and fold, the Margate sauna machine, and twenty modern ideas to borrow.', pages: '6 pages, A4' },
+      { sheet: 'my-machine.html', pdf: 'my-machine.pdf', preview: 'my-machine.jpg', title: 'My modern bathing machine: the LEGO model', desc: 'The model photographed like a studio shot, with its four big ideas (tracks, a stage, fountains, a slide), the machine at the sea, and boxes to compare it with a Victorian one.', pages: '2 pages, A4' },
+      { sheet: 'machine-plans.html', pdf: 'machine-plans.pdf', preview: 'machine-plans.jpg', title: 'My machine drawn like an architect: plan and elevations', desc: 'The machine drawn from above and from all four sides at 1:100, on metre squares with real sizes, a 3D view, a key to its parts, and squares to draw your own.', pages: '2 pages, A4' },
     ],
     facts: BM_FACTS,
     gallery: ['osborne-machine-side.jpg', 'osborne-machine-front.jpg', 'osborne-machine-corner.jpg', 'osborne-machine-2022.jpg', 'osborne-bathing-machine.jpg', 'bathing-machines.jpg', 'bathing-horse.jpg', 'bathing-costumes.jpg'],

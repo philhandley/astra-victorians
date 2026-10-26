@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My modern bathing machine: photographs of the model</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  /* studio photographs: soft backdrops, so no frames, just a little rounding */
+  .shot { margin: 0; position: relative; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 2.5mm; }
+  .hero { display: grid; grid-template-columns: 1fr 64mm; gap: 4mm; }
+  .hero .shot { height: 158mm; }
+  .feats { display: grid; gap: 3mm; align-content: center; }
+  .feat { display: grid; grid-template-columns: 9mm 1fr; gap: 2.5mm; align-items: start; }
+  .feat i { width: 9mm; height: 9mm; border-radius: 50%; background: var(--ox); color: #fff; display: grid; place-items: center; font-style: normal; font-weight: 700; font-size: 11pt; }
+  .feat b { display: block; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 15pt; line-height: 1.05; color: var(--ink); margin-bottom: 0.6mm; }
+  .feat span { font-size: 9.6pt; line-height: 1.32; color: var(--ink2); }
+  .row4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+  .row4 .shot { height: 68mm; }
+  .cap { position: absolute; left: 2mm; bottom: 2mm; background: rgba(255, 255, 255, 0.88); border-radius: 1.4mm; padding: 0.7mm 2mm; font-size: 8pt; font-weight: 600; color: var(--ink); }
+  .cap.n::before { content: attr(data-n); display: inline-grid; place-items: center; width: 4.2mm; height: 4.2mm; margin-right: 1.4mm; border-radius: 50%; background: var(--ox); color: #fff; font-size: 7pt; }
+  /* page 2: on the sea */
+  .sea { display: grid; grid-template-columns: 1.15fr 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 3mm; height: 194mm; flex: none; }
+  .sea .shot:first-child { grid-row: 1 / span 2; }
+  .sea .shot { height: 100%; min-height: 0; overflow: hidden; }
+  .write { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; flex: none; }
+  .write .box { min-height: 0; }
+  .write .ln { height: 9.6mm; border-bottom: 0.3mm solid var(--ink); }
+  .write h3 { margin-bottom: 1mm; }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../tasks/bathing-machine.html">← Design a bathing machine</a><small>2 pages, A4</small></div><a class="b ghost" href="../pdf/my-machine.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · my design · built in LEGO</small>My modern bathing machine</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">First I drew it on paper. Then I built it in LEGO. It drives itself down to the sea, and it has a party on top.</p>
+  <div class="hero">
+    <figure class="shot"><img src="../assets/img/machine-5058.jpg" alt="The LEGO bathing machine from the front: the round stage with the band under the stacked pastel deck, the red parasol and a purple flower on top, black caterpillar tracks underneath"></figure>
+    <div class="feats">
+      <div class="feat"><i>1</i><div><b>Caterpillar tracks</b><span>Instead of wheels and a horse, it drives itself over the sand and into the sea.</span></div></div>
+      <div class="feat"><i>2</i><div><b>A stage for a rock band</b><span>A round stage at the front, under the roof, so the band stays dry.</span></div></div>
+      <div class="feat"><i>3</i><div><b>Water fountains</b><span>At the top sides, to spray water and cool everybody down on a hot day.</span></div></div>
+      <div class="feat"><i>4</i><div><b>A slide with a shade</b><span>Climb up under the parasol and slide down into the sea.</span></div></div>
+    </div>
+  </div>
+  <div class="row4">
+    <figure class="shot"><img src="../assets/img/machine-5054.jpg" alt="The machine from the back corner, with the slide"><span class="cap n" data-n="1">Tracks</span></figure>
+    <figure class="shot"><img src="../assets/img/machine-5055.jpg" alt="The stage from above, with the band"><span class="cap n" data-n="2">The stage</span></figure>
+    <figure class="shot"><img src="../assets/img/machine-5062.jpg" alt="The side, with the wings at the top"><span class="cap n" data-n="3">Fountains</span></figure>
+    <figure class="shot"><img src="../assets/img/machine-5061.jpg" alt="The slide under the red parasol"><span class="cap n" data-n="4">The slide</span></figure>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 1 of 2</div></footer>
+</section>
+
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · my design · built in LEGO</small>Down to the sea</div><div class="pts">10<small>POINTS</small></div></header>
+  <div class="sea">
+    <figure class="shot"><img src="../assets/img/machine-5063.jpg" alt="The machine at the edge of the blue LEGO sea, its pink slide reaching down into the water"><span class="cap">Sliding into the sea</span></figure>
+    <figure class="shot"><img src="../assets/img/machine-5064.jpg" alt="The machine from the front with the band on its stage, the sea behind"><span class="cap">The band on stage</span></figure>
+    <figure class="shot"><img src="../assets/img/machine-5059.jpg" alt="The machine from the side: slide, flower and parasol"><span class="cap">The side, with the flower</span></figure>
+  </div>
+  <div class="write">
+    <div class="box"><h3>A Victorian machine had…</h3><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+    <div class="box"><h3>My machine has…</h3><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 2 of 2</div></footer>
+</section>
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

@@ -4,8 +4,12 @@
 // (beforeinstallprompt) checks this app's own address instead, so a button that uses it still installs Astra
 // Victorians. index.html catches the offer in an inline script before this module loads.
 const root = new URL('..', import.meta.url);
+// No service worker on this PC's test server (localhost): there pages must always be fresh, and the headless
+// browsers that make the PDFs and screenshots must never be handed an old copy. ?sw turns it on for a test.
+const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) && !new URLSearchParams(location.search).has('sw');
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  addEventListener('load', () => navigator.serviceWorker.register(new URL('sw.js', root), { scope: root.href }).catch(err => console.warn('service worker', String(err))));
+  if (local) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(() => {});
+  else addEventListener('load', () => navigator.serviceWorker.register(new URL('sw.js', root), { scope: root.href }).catch(err => console.warn('service worker', String(err))));
 }
 
 const asApp = () => matchMedia('(display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui)').matches;

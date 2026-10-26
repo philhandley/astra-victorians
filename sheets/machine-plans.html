@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My modern bathing machine: plan and elevations</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  /* drawings at 1:100: 1 cm on the paper is 1 m on the beach (the pictures come from tools/machine_drawings.py) */
+  .dwg { position: relative; flex: none; }
+  .dwg img { position: absolute; display: block; }
+  .dwg svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .dwg .grid line { stroke: #6f8fa6; stroke-width: 0.012; opacity: .45; }
+  .dwg .dim line, .dwg .dim path { stroke: var(--ink); stroke-width: 0.022; fill: none; }
+  .dwg .dim text { font-family: Lexend, sans-serif; font-size: 0.3px; font-weight: 600; fill: var(--ink); }
+  .dwg .dim rect { fill: #fff; }
+  .dwg .co circle { fill: var(--ox); stroke: #fff; stroke-width: 0.04; }
+  .dwg .co text { font-family: Lexend, sans-serif; font-size: 0.27px; font-weight: 700; fill: #fff; text-anchor: middle; dominant-baseline: central; }
+  .capr { display: flex; justify-content: space-between; align-items: baseline; gap: 3mm; font-size: 9pt; color: var(--grey); }
+  .capr b { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 14pt; color: var(--ink); }
+  .p1 { display: grid; grid-template-columns: 82mm 1fr; gap: 6mm; flex: none; }
+  .mine { flex: 1; min-height: 0; border: 0.4mm dashed var(--line); border-radius: 4mm; padding: 2.2mm 3.5mm; font-size: 9.6pt; color: var(--ink2);
+    background-image: linear-gradient(#dbe5ec 0.25mm, transparent 0.25mm), linear-gradient(90deg, #dbe5ec 0.25mm, transparent 0.25mm); background-size: 10mm 10mm; background-position: 3mm 9mm; }
+  .mine b { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 14pt; color: var(--ink); margin-right: 2mm; }
+  .mine span { background: #fff; padding: 0 1.5mm; border-radius: 1mm; }
+  .p1 .axo img { width: 100%; display: block; }
+  .key { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.7mm; }
+  .key li { display: grid; grid-template-columns: 6mm 1fr; gap: 2mm; align-items: start; font-size: 9pt; line-height: 1.3; color: var(--ink2); }
+  .key li i { width: 5.4mm; height: 5.4mm; border-radius: 50%; background: var(--ox); color: #fff; display: grid; place-items: center; font-style: normal; font-weight: 700; font-size: 8pt; }
+  .key li b { color: var(--ink); }
+  .bar { display: flex; align-items: flex-end; gap: 0; margin-top: 1mm; }
+  .bar span { width: 10mm; height: 2.2mm; border: 0.3mm solid var(--ink); box-sizing: border-box; position: relative; }
+  .bar span:nth-child(odd) { background: var(--ink); }
+  .bar span::after { content: attr(data-n); position: absolute; left: -1mm; top: 2.6mm; font-size: 7.5pt; font-weight: 600; color: var(--ink); }
+  .bar span:last-child::before { content: attr(data-e); position: absolute; right: -1.5mm; top: 2.6mm; font-size: 7.5pt; font-weight: 600; }
+  .big { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 3mm; }
+  .big div { background: var(--cream); border-radius: 3mm; padding: 2mm 2.6mm; font-size: 8.6pt; line-height: 1.25; color: var(--ink2); }
+  .big div b { display: block; font-size: 13pt; color: var(--ink); line-height: 1.1; }
+  .row { display: flex; gap: 6mm; align-items: flex-start; }
+  .el { display: flex; flex-direction: column; gap: 1mm; }
+  .side { padding-top: 6mm; display: flex; flex-direction: column; gap: 1.5mm; font-size: 9.6pt; line-height: 1.35; color: var(--ink2); }
+  .side b { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 15pt; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../tasks/bathing-machine.html">← Design a bathing machine</a><small>2 pages, A4 · print at 100%</small></div><a class="b ghost" href="../explore/my-machine.html">Drive it</a><a class="b ghost" href="../pdf/machine-plans.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · my design, drawn like an architect</small>My modern bathing machine: the plan</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Architects draw a building from above (a <b>plan</b>) and from each side (<b>elevations</b>). Here is my machine drawn the same way, to scale: <b>1 square is 1 metre</b> on the beach.</p>
+  <div class="p1">
+    <div class="el">
+      <div class="capr"><b>Plan, from above</b><span>the stage is at the bottom</span></div>
+      <div class="dwg" id="d-plan"></div>
+      <div class="bar"><span data-n="0"></span><span data-n="1"></span><span data-n="2"></span><span data-n="3"></span><span data-n="4" data-e="5 m"></span></div>
+      <div style="height:5mm"></div>
+      <div class="big">
+        <div><b>10 m long</b>from the stage to the end of the slide</div>
+        <div><b>6.4 m wide</b>from one fountain to the other</div>
+        <div><b>7 m tall</b>to the top of the flower</div>
+        <div><b>6.8 m tracks</b>each as long as a big car and a half</div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:3.4mm; min-width:0">
+      <div class="axo"><div class="capr"><b>The machine in 3D</b></div><img src="../assets/img/machine-dwg-axo.jpg" alt="The machine drawn in 3D from the front corner: caterpillar tracks, the round stage with the band, the stacked coloured bands, the arms with fountains, the flower, the red shade and the pink slide"></div>
+      <ol class="key">
+        <li><i>1</i><div><b>Caterpillar tracks.</b> No horse needed: it drives itself over the sand and into the sea.</div></li>
+        <li><i>2</i><div><b>A stage for a rock band,</b> round, at the front, under a roof.</div></li>
+        <li><i>3</i><div><b>Fountains</b> at the tips of four arms, to cool everyone down.</div></li>
+        <li><i>4</i><div><b>A curly slide</b> from the back deck down into the sea.</div></li>
+        <li><i>5</i><div><b>A shade</b> on a tall mast over the slide.</div></li>
+        <li><i>6</i><div><b>A flower</b> that spins in the wind, like a little wind turbine.</div></li>
+        <li><i>7</i><div><b>Changing rooms</b> inside, like a Victorian machine.</div></li>
+        <li><i>8</i><div><b>A rooftop</b> in three colours.</div></li>
+      </ol>
+    </div>
+  </div>
+  <div class="mine"><span><b>Your turn</b>Draw your own machine from above. 1 square is 1 metre: how long will yours be?</span></div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 1 of 2 · scale 1:100</div></footer>
+</section>
+
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · my design, drawn like an architect</small>Elevations: my machine from each side</div><div class="pts">10<small>POINTS</small></div></header>
+  <div class="row">
+    <div class="el"><div class="capr"><b>Front</b><span>the stage</span></div><div class="dwg" id="d-front"></div></div>
+    <div class="el"><div class="capr"><b>Back</b><span>the slide</span></div><div class="dwg" id="d-back"></div></div>
+  </div>
+  <div class="row"><div class="dwg" id="d-left"></div><div class="side"><b>Left side</b><span>The stage is on the left, the slide on the right. Can you find the flower that spins in the wind?</span></div></div>
+  <div class="row"><div class="dwg" id="d-right"></div><div class="side"><b>Right side</b><span>Count the squares: how tall is the deck? How long is the whole machine?</span></div></div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 2 of 2 · scale 1:100</div></footer>
+</section>
+<script type="module">
+// Each drawing: the picture's frame in metres (as rendered: across the page to the right, up the page), the margin
+// round it for dimensions (metres), and what to mark. 10 mm a metre on the page: 1:100.
+const MM = 10;
+const D = {
+  // plan: across = x, down the page = z (the front at the bottom)
+  plan: { f: [-3.6, 3.6, -4.2, 6.8], pad: [0.75, 0.15, 0.25, 0.7], down: true,
+    dims: [['h', -3.2, 3.2, 4.85, '6.4 m'], ['v', -6.49, 3.85, -3.95, '10.3 m']],
+    marks: [[1, 2.55, 0.1], [2, 0.75, 3.35], [3, 3.05, 1.95], [4, 2.0, -5.55], [5, -1.4, -3.5], [6, 2.05, -2.55], [7, -1.95, 0.6], [8, 0, -0.3]] },
+  // elevations: across = the way the camera's right points, up = height
+  front: { f: [-3.6, 3.6, -0.2, 7.0], pad: [0.05, 1.2, 0, 0.55],
+    dims: [['v', 0, 2.68, 3.95, '2.7 m'], ['v', 0, 6.04, 4.5, '6 m'], ['h', -2.8, 2.8, -0.5, '5.6 m']],
+    marks: [[1, -2.25, 1.2], [2, 0, 2.95], [3, 3.05, 4.85], [6, 2.45, 6.3]] },
+  back: { f: [-3.6, 3.6, -0.2, 7.0], pad: [0.05, 0.4, 0, 0.55],
+    dims: [['h', -3.2, 3.2, -0.5, '6.4 m']],
+    marks: [[4, -2.6, 1.6], [5, 0.9, 6.3], [7, 0.4, 3.6]] },
+  left: { f: [-4.2, 6.4, -0.2, 7.0], pad: [0.05, 1.2, 0, 0.55],
+    dims: [['h', -2.8, 4.0, -0.5, 'tracks 6.8 m'], ['v', 0, 6.95, 6.95, '7 m']],
+    marks: [[1, 0.6, 1.0], [2, -3.3, 3.3], [6, 2.0, 6.0], [4, 5.6, 1.7], [5, 4.6, 6.4], [8, -0.4, 5.75]] },
+  right: { f: [-6.4, 4.2, -0.2, 7.0], pad: [0.05, 1.2, 0, 0.55],
+    dims: [['h', -6.49, 3.85, -0.5, '10.3 m'], ['v', 0, 2.68, 4.75, '2.7 m']],
+    marks: [[3, -2.0, 5.0], [7, -0.6, 3.6]] },
+};
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); parent?.appendChild(e); return e; };
+for (const [name, d] of Object.entries(D)) {
+  const host = document.getElementById('d-' + name);
+  const [l, r, b, t] = d.f, [pl, pr, pt, pb] = d.pad, w = r - l, h = t - b;
+  host.style.width = (w + pl + pr) * MM + 'mm'; host.style.height = (h + pt + pb) * MM + 'mm';
+  const img = document.createElement('img'); img.src = `../assets/img/machine-dwg-${name}.jpg`; img.alt = '';
+  Object.assign(img.style, { left: pl * MM + 'mm', top: pt * MM + 'mm', width: w * MM + 'mm', height: h * MM + 'mm' });
+  host.appendChild(img);
+  // svg in metres: x across, y down the page (for elevations y = -height; for the plan y = z)
+  // (the picture's 'up' is -y on the page; on the plan, up the page is the back, so page y is z; on an elevation it is -height)
+  const y0 = -t, svg = el('svg', { viewBox: `${l - pl} ${y0 - pt} ${w + pl + pr} ${h + pt + pb}` }, host);
+  const Y = v => d.down ? v : -v;
+  const g = el('g', { class: 'grid' }, svg);
+  for (let x = Math.ceil(l); x <= r; x++) el('line', { x1: x, x2: x, y1: y0, y2: y0 + h }, g);
+  for (let y = Math.ceil(b); y <= t; y++) el('line', { x1: l, x2: r, y1: -y, y2: -y }, g);
+  const dg = el('g', { class: 'dim' }, svg), tick = 0.12;
+  for (const [kind, a, c, at, label] of d.dims) {
+    if (kind === 'h') {
+      const yy = Y(at);
+      el('line', { x1: a, x2: c, y1: yy, y2: yy }, dg);
+      for (const x of [a, c]) el('line', { x1: x - tick, x2: x + tick, y1: yy + tick, y2: yy - tick }, dg), el('line', { x1: x, x2: x, y1: yy - 0.18, y2: yy + 0.18 }, dg);
+      const tx = el('text', { x: (a + c) / 2, y: yy + 0.11, 'text-anchor': 'middle' }, dg); tx.textContent = label;
+      const bb = label.length * 0.17 + 0.2; el('rect', { x: (a + c) / 2 - bb / 2, y: yy - 0.2, width: bb, height: 0.4, rx: 0.08 }, dg).after(tx);
+    } else {
+      const x = at, ya = Y(a), yc = Y(c);
+      el('line', { x1: x, x2: x, y1: ya, y2: yc }, dg);
+      for (const yy of [ya, yc]) el('line', { x1: x - tick, x2: x + tick, y1: yy + tick, y2: yy - tick }, dg), el('line', { x1: x - 0.18, x2: x + 0.18, y1: yy, y2: yy }, dg);
+      const my = (ya + yc) / 2, bb = label.length * 0.17 + 0.2;
+      const gg = el('g', { transform: `translate(${x} ${my}) rotate(-90)` }, dg);
+      el('rect', { x: -bb / 2, y: -0.2, width: bb, height: 0.4, rx: 0.08 }, gg);
+      const tx = el('text', { x: 0, y: 0.11, 'text-anchor': 'middle' }, gg); tx.textContent = label;
+    }
+  }
+  const cg = el('g', { class: 'co' }, svg);
+  for (const [n, x, y] of d.marks) { el('circle', { cx: x, cy: Y(y), r: 0.22 }, cg); const tx = el('text', { x, y: Y(y) }, cg); tx.textContent = n; }
+}
+</script>
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>
