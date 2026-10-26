@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meet the Victorians · Astra Victorians</title>
+<meta name="theme-color" content="#f4f4f1">
+<link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<style>
+  .inv { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .inv .i { background: var(--card); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); }
+  .inv .i b { display: block; font-family: var(--serif); color: var(--ox); font-size: 1.6rem; line-height: 1; }
+  .inv .i h3 { margin: 4px 0 6px; font-size: 1.1rem; }
+  .inv .i p { margin: 0; font-size: .98rem; color: var(--ink-2); }
+  .big-facts .fact p { font-size: 1.15rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="index.html"><img src="assets/icons/icon-192.png" alt="">Astra Victorians</a>
+    <nav class="nav"><a href="index.html">Tasks</a><a class="on" href="victorians.html">Meet the Victorians</a><a href="grown-ups.html">Grown-ups</a></nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Meet the Victorians</h1>
+      <p class="lede">The Victorians are the people who lived in Britain while Victoria was queen: from 1837 to 1901. That is about 125 to 190 years ago, roughly five or six grandparents in a row.</p>
+      <p><button class="btn say" data-say="The Victorians are the people who lived in Britain while Victoria was queen, from 1837 to 1901. That is about 125 to 190 years ago, roughly five or six grandparents in a row. They built railways and schools, invented stamps, Christmas cards and the light bulb, and wore a lot of hats.">Read aloud</button> <a class="btn ghost" href="sheets/timeline.html">Print the timeline</a></p>
+    </div>
+    <figure><img src="assets/img/crystal-palace.jpg" alt="" id="heroimg"><figcaption id="herocap"></figcaption></figure>
+  </section>
+
+  <section class="block">
+    <h2>Who was Queen Victoria?</h2>
+    <div class="facts big-facts" id="qvfacts"></div>
+    <p style="margin-top:14px"><a href="tasks/fact-file.html">More facts, pictures and the fact file sheet →</a></p>
+  </section>
+
+  <section class="block">
+    <h2>What was new in Victorian times?</h2>
+    <p>Victoria was queen for 63 years, and in that time Britain changed faster than ever before. Here are some firsts.</p>
+    <div class="inv" id="inventions"></div>
+  </section>
+
+  <section class="block twocol">
+    <div>
+      <h2>Homes, food and toys</h2>
+      <div class="facts" id="lifefacts"></div>
+    </div>
+    <div>
+      <h2>Getting about</h2>
+      <div class="facts" id="travelfacts"></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Pictures</h2>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section class="block">
+    <h2>Timeline, 1837 to 1901</h2>
+    <ul class="timeline" id="timeline"></ul>
+    <p><a class="btn" href="sheets/timeline.html">Print the timeline poster</a></p>
+  </section>
+
+  <section class="block">
+    <details class="notes"><summary>Grown-up notes and sources</summary>
+      <p>Facts on this page come from the sources listed in <code>research/07-victorian-era-overview.md</code> and <code>research/01-queen-victoria.md</code>. Population figures are census figures; "about five or six grandparents in a row" takes a generation as 25 to 30 years and is an estimate.</p>
+      <ul id="sources"></ul>
+    </details>
+  </section>
+</div>
+<footer class="site"><div class="wrap"><a href="index.html">All tasks</a> · <a href="grown-ups.html#credits">Picture credits</a> · Astra Victorians, autumn 2026</div></footer>
+
+<script type="module">
+import { TIMELINE, INVENTIONS, LIFE, TRAVEL, ERA_SOURCES, ERA_GALLERY } from './js/era.js';
+import { FACTS } from './js/victoria.js';
+import { CREDITS } from './js/credits.js';
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } };
+const speaker = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const factCard = f => `<div class="fact"><p>${esc(f.kid)}</p><div class="foot"><span class="src">${f.src ? `<a href="${f.src}" target="_blank" rel="noopener">${esc(f.srcName || host(f.src))}</a>` : ''}</span><button class="btn say" data-say="${esc(f.kid)}">${speaker} Read</button></div></div>`;
+document.getElementById('qvfacts').innerHTML = [FACTS[0], FACTS[1], FACTS[3], FACTS[5], FACTS[7], FACTS[9]].map(factCard).join('');
+document.getElementById('inventions').innerHTML = INVENTIONS.map(i => `<div class="i"><b>${i.year}</b><h3>${esc(i.what)}</h3><p>${esc(i.kid)}</p>${i.src ? `<p class="src" style="font-size:.78rem;margin-top:6px"><a href="${i.src}" target="_blank" rel="noopener">${esc(i.srcName || host(i.src))}</a></p>` : ''}</div>`).join('');
+document.getElementById('lifefacts').innerHTML = LIFE.map(factCard).join('');
+document.getElementById('travelfacts').innerHTML = TRAVEL.map(factCard).join('');
+document.getElementById('timeline').innerHTML = TIMELINE.map(t => `<li><b>${t.year}</b>${esc(t.what)}</li>`).join('');
+document.getElementById('sources').innerHTML = ERA_SOURCES.map(s => `<li><a href="${s.url}" target="_blank" rel="noopener">${esc(s.name)}</a></li>`).join('');
+document.getElementById('gallery').innerHTML = ERA_GALLERY.filter(g => CREDITS[g]).map(g => `<figure><img src="assets/img/${g}" alt="${esc(CREDITS[g].alt)}" loading="lazy"><figcaption>${esc(CREDITS[g].caption)} · ${esc(CREDITS[g].credit)}</figcaption></figure>`).join('');
+const c = CREDITS['crystal-palace.jpg']; if (c) document.getElementById('herocap').textContent = c.caption + ' · ' + c.credit;
+import('./js/site.js');
+</script>
+<script type="module" src="js/pwa.js"></script>
+</body>
+</html>

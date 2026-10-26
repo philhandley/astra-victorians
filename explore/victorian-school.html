@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Monks Horton School · Astra Victorians</title>
+<meta name="description" content="Monks Horton school, Kent, 1852, modelled in 3D from Joseph Clarke's own drawings: spin it round, ring the bell, light the fire, lift the roof and find the child who is late.">
+<meta name="theme-color" content="#efe9df">
+<link rel="icon" href="../assets/icons/favicon-32.png" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Lexend:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="look.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<noscript><p style="padding:40px">This page needs JavaScript to show the school.</p></noscript>
+<script type="module">
+import { look } from './look.js';
+import cfg from './models/monks-horton.js';
+look(cfg);
+</script>
+<script type="module" src="../js/pwa.js"></script>
+</body>
+</html>

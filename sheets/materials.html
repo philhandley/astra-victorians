@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Materials sorting chart: printable sheets</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  .sort { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4mm; flex: 1; min-height: 0; }
+  .sort .m { border: 0.5mm solid var(--line); border-radius: 3mm; padding: 3mm 3.5mm; display: flex; flex-direction: column; }
+  .sort .m .hd { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1mm; }
+  .sort .m .hd svg { width: 11mm; height: 11mm; }
+  .sort .m .hd b { font-family: var(--serif); font-size: 15pt; color: var(--ox); }
+  .sort .m .hint { font-size: 9pt; color: var(--grey); margin: 0 0 1mm; }
+  .sort .m .lines { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+  .sort .m .lines .ln { height: auto; flex: 1; max-height: 11mm; border-bottom-style: dashed; }
+  table.props th { text-align: center; font-size: 10pt; padding: 1.5mm 1mm; }
+  table.props th.obj { text-align: left; width: 38mm; }
+  table.props th.mat { text-align: left; width: 26mm; }
+  table.props td { height: 12.5mm; text-align: center; }
+  table.props td.obj, table.props td.mat { text-align: left; }
+  table.props th svg { width: 8mm; height: 8mm; display: block; margin: 0 auto 1mm; }
+  .tests { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm 4mm; font-size: 10.5pt; }
+  .tests div { display: flex; gap: 2mm; align-items: flex-start; }
+  .tests b { color: var(--ox); }
+  .pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 5mm; flex: 1; min-height: 0; }
+  .pairs .p { border: 0.4mm solid var(--line); border-radius: 2.5mm; padding: 2.5mm 3mm; display: grid; grid-template-columns: 1fr auto 1fr; gap: 2mm; align-items: center; text-align: center; font-size: 11pt; }
+  .pairs .p .vs { font-family: var(--serif); font-weight: 900; color: var(--grey); font-size: 11pt; }
+  .pairs .p b { display: block; font-size: 11.5pt; }
+  .pairs .p small { color: var(--grey); font-size: 9pt; display: block; }
+  .pairs .p .ask { grid-column: 1 / -1; border-top: 0.3mm dashed var(--faint); padding-top: 1.5mm; font-size: 9pt; display: flex; flex-wrap: wrap; gap: 1mm 1.5mm; justify-content: center; align-items: center; }
+  .pairs .p .ask .pill { font-size: 8.5pt; padding: .2mm 2mm; }
+  .pairs .p .ask em { font-style: normal; color: var(--grey); margin: 0 .5mm 0 1.5mm; }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../tasks/materials.html">← Materials sorting chart</a><small>3 pages, A4</small></div><a class="b ghost" href="../pdf/materials.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<!-- Page 1: sorting chart -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Material hunt: my sorting chart</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Go round your home like a detective. Find things made of each material and write (or draw) them in the right box. Some things are made of more than one material: choose the main one.</p>
+  <div class="sort">
+    <div class="m"><div class="hd"><svg viewBox="0 0 40 40" class="line"><path d="M6 10h28v20H6z"/><path d="M8 16c6-2 10 4 16 1s6 1 8 1M8 24c6-3 10 2 16-1s6 0 8 1"/></svg><b>Wood</b></div><p class="hint">table, spoon, door, pencil, chopping board…</p><div class="lines"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+    <div class="m"><div class="hd"><svg viewBox="0 0 40 40" class="line"><path d="M8 30l6-20h12l6 20z"/><path d="M12 18h16M11 24h18"/></svg><b>Metal</b></div><p class="hint">spoon, key, saucepan, coin, paper clip…</p><div class="lines"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+    <div class="m"><div class="hd"><svg viewBox="0 0 40 40" class="line"><path d="M14 8h12v6l4 4v14a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V18l4-4z"/><path d="M14 22h12"/></svg><b>Plastic</b></div><p class="hint">bottle, toy, bucket, lunchbox, toothbrush…</p><div class="lines"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+    <div class="m"><div class="hd"><svg viewBox="0 0 40 40" class="line"><path d="M12 8h16l-2 24H14z"/><path d="M15 14l1 14"/></svg><b>Glass</b></div><p class="hint">window, jar, glass, mirror, light bulb…</p><div class="lines"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+    <div class="m"><div class="hd"><svg viewBox="0 0 40 40" class="line"><path d="M8 12l6-4h12l6 4-3 6-3-2v16H14V16l-3 2z"/></svg><b>Fabric</b></div><p class="hint">T-shirt, towel, sock, curtain, teddy…</p><div class="lines"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+    <div class="m"><div class="hd"><svg viewBox="0 0 40 40" class="line"><path d="M10 6h14l6 6v22H10z"/><path d="M24 6v6h6M14 18h12M14 24h12M14 30h8"/></svg><b>Paper and card</b></div><p class="hint">book, cereal box, tissue, egg box…</p><div class="lines"><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div></div></div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 1 of 3</div></footer>
+</section>
+
+<!-- Page 2: property tests -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>What is it like? Test it!</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Choose eight things from your hunt. Test each one and tick every box that is true.</p>
+  <div class="box">
+    <div class="tests">
+      <div><b>Hard?</b> Press it with your thumb. Does it squash?</div>
+      <div><b>Bendy?</b> Bend it a little. Does it bend or stay stiff?</div>
+      <div><b>Shiny?</b> Shine a torch on it. Does it gleam?</div>
+      <div><b>See-through?</b> Hold it up. Can you see through it?</div>
+      <div><b>Waterproof?</b> Drip one drop of water. Does it soak in?</div>
+      <div><b>Magnetic?</b> Touch it with a fridge magnet. Does it stick?</div>
+    </div>
+  </div>
+  <table class="t props">
+    <tr>
+      <th class="obj">Thing</th><th class="mat">Material</th>
+      <th><svg viewBox="0 0 40 40" class="line"><path d="M8 28l12-18 12 18z"/></svg>hard</th>
+      <th><svg viewBox="0 0 40 40" class="line"><path d="M8 30c4-16 20-16 24 0"/></svg>bendy</th>
+      <th><svg viewBox="0 0 40 40" class="line"><circle cx="20" cy="20" r="6"/><path d="M20 6v5M20 29v5M6 20h5M29 20h5M10 10l3 3M27 27l3 3M30 10l-3 3M13 27l-3 3"/></svg>shiny</th>
+      <th><svg viewBox="0 0 40 40" class="line"><rect x="8" y="10" width="24" height="20"/><circle cx="20" cy="20" r="4"/></svg>see-through</th>
+      <th><svg viewBox="0 0 40 40" class="line"><path d="M20 8c6 8 9 12 9 17a9 9 0 0 1-18 0c0-5 3-9 9-17z"/></svg>waterproof</th>
+      <th><svg viewBox="0 0 40 40" class="line"><path d="M12 8v14a8 8 0 0 0 16 0V8"/><path d="M12 8h6v8h-6M22 8h6v8h-6"/></svg>magnetic</th>
+    </tr>
+    <tr><td class="obj"></td><td class="mat"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="obj"></td><td class="mat"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="obj"></td><td class="mat"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="obj"></td><td class="mat"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="obj"></td><td class="mat"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="obj"></td><td class="mat"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="obj"></td><td class="mat"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="obj"></td><td class="mat"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <div class="box dash grow">
+    <h3>I noticed…</h3>
+    <p class="tiny" style="margin:0 0 1mm">Which material was the only magnetic one? Which things were see-through? Why is a window made of glass and not wood?</p>
+    <div class="lines"><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 2 of 3</div></footer>
+</section>
+
+<!-- Page 3: Victorian or modern? -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Victorian materials, modern materials</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Victorian homes had almost no plastic. Things were made of wood, iron, tin, glass, pottery, leather, wool and cotton. For each pair, tick what the Victorian one was made of and what yours is made of.</p>
+  <div class="pairs">
+    <div class="p"><div><b>Tin bath</b><small>filled with kettles by the fire</small></div><div class="vs">then · now</div><div><b>Bath</b><small>plumbed in, hot tap</small></div><div class="ask"><em>then</em><span class="pill">metal</span><em>now</em><span class="pill">plastic</span> <span class="pill">metal</span> <span class="pill">other</span></div></div>
+    <div class="p"><div><b>Wooden hoop and stick</b><small>a favourite toy</small></div><div class="vs">then · now</div><div><b>Hula hoop</b></div><div class="ask"><em>then</em><span class="pill">wood</span><em>now</em><span class="pill">plastic</span> <span class="pill">wood</span> <span class="pill">other</span></div></div>
+    <div class="p"><div><b>Slate and slate pencil</b><small>wiped clean with a rag</small></div><div class="vs">then · now</div><div><b>Whiteboard and pen</b></div><div class="ask"><em>then</em><span class="pill">rock</span><em>now</em><span class="pill">plastic</span> <span class="pill">metal</span> <span class="pill">other</span></div></div>
+    <div class="p"><div><b>Candle and gas lamp</b><small>flames for light</small></div><div class="vs">then · now</div><div><b>Light bulb and switch</b></div><div class="ask"><em>then</em><span class="pill">wax</span> <span class="pill">metal</span><em>now</em><span class="pill">glass</span> <span class="pill">plastic</span></div></div>
+    <div class="p"><div><b>Rag doll or peg doll</b><small>sewn at home</small></div><div class="vs">then · now</div><div><b>My favourite toy</b></div><div class="ask"><em>then</em><span class="pill">fabric</span> <span class="pill">wood</span><em>now</em><span class="pill">plastic</span> <span class="pill">other</span></div></div>
+    <div class="p"><div><b>Glass milk bottle, paper bag</b><small>brought by a milk cart</small></div><div class="vs">then · now</div><div><b>Milk bottle, carrier bag</b></div><div class="ask"><em>then</em><span class="pill">glass</span> <span class="pill">paper</span><em>now</em><span class="pill">plastic</span> <span class="pill">card</span></div></div>
+  </div>
+  <div class="box dash withref" id="plasticfact" style="grid-template-columns: 1fr 44mm">
+    <div><h3>Did you know?</h3>
+    <p style="margin:0">One of the very first man-made plastics was shown in Victorian times: Alexander Parkes showed "Parkesine" at a big exhibition in London in 1862. It was rare, so Victorian children hardly ever saw any plastic. Bakelite, the first plastic everyone used, came in 1907, six years after Victoria died.</p></div>
+    <figure class="ref" data-img="kitchen-range.jpg" data-cap="A Victorian cast-iron kitchen range" style="--h:30mm"></figure>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 3 of 3</div></footer>
+</section>
+
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

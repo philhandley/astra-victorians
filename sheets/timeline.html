@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Victorian timeline poster: printable</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  .page { width: 297mm; height: 210mm; }
+  .tl { flex: 1; min-height: 0; position: relative; }
+  .tl .bar { position: absolute; left: 6mm; right: 6mm; top: 50%; height: 1.2mm; background: var(--ink); border-radius: 1mm; }
+  .tl .bar::before, .tl .bar::after { content: ''; position: absolute; top: -2mm; width: 5mm; height: 5mm; border-radius: 50%; background: var(--ox); }
+  .tl .bar::before { left: -2mm; } .tl .bar::after { right: -2mm; }
+  .tl .ev { position: absolute; width: 33mm; transform: translateX(-50%); text-align: center; font-size: 8.2pt; line-height: 1.22; }
+  .tl .ev b { display: block; font-family: var(--serif); font-size: 14pt; color: var(--ox); line-height: 1; margin-bottom: 0.6mm; }
+  .tl .ev .ico { width: 8.5mm; height: 8.5mm; margin: 0 auto 0.6mm; }
+  .tl .ev.up .ico { order: 2; }
+  .tl .ev.up { display: flex; flex-direction: column-reverse; }
+  .tl .dot { position: absolute; top: 50%; width: 4mm; height: 4mm; border-radius: 50%; background: #fff; border: 0.6mm solid var(--line); transform: translate(-50%, -50%); }
+  .tl .tick { position: absolute; width: 0.3mm; background: var(--line); transform: translateX(-50%); }
+  .yrs { display: flex; justify-content: space-between; font-size: 8.5pt; color: var(--grey); padding: 0 4mm; }
+  .me { display: flex; gap: 4mm; align-items: center; font-size: 10pt; }
+  .me span { border-bottom: 0.35mm solid var(--ink); width: 30mm; height: 6mm; display: inline-block; }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../victorians.html">← Meet the Victorians</a><small>1 page, A4 landscape</small></div><a class="b ghost" href="../pdf/timeline.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<section class="page land">
+  <header class="ph"><div class="t"><small>Astra Victorians · the Victorian age</small>Queen Victoria's reign, 1837 to 1901</div><div class="pts" style="font-size:9pt">64<small>YEARS</small></div></header>
+  <p class="lead" style="font-size:11pt">Victoria was queen for 63 years and 7 months, from when she was 18 until she was 81. Here is what happened while she wore the crown. The line is 64 years long: each 10 mm is about two and a half years.</p>
+  <div class="tl" id="tl"><div class="bar"></div></div>
+  <div class="yrs"><span>1837</span><span>1850</span><span>1860</span><span>1870</span><span>1880</span><span>1890</span><span>1901</span></div>
+  <div class="box" style="padding:2mm 4mm"><div class="me">Add your own: a Victorian thing in Wrenbury, or something from your family tree. <span></span> happened in <span style="width:16mm"></span></div></div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Timeline poster</div></footer>
+</section>
+
+<script type="module">
+import { TIMELINE } from '../js/era.js';
+const tl = document.getElementById('tl');
+const x = y => 6 + (y - 1837) / (1901 - 1837) * (297 - 26 - 12); // mm across the bar
+// each label goes in the first of four lanes (just above, just below, further above, further below) where it
+// does not touch the label before it, so events close in time never overlap
+const W = 33, GAP = 1.5, LANE = 29;
+const end = { up1: -1e9, dn1: -1e9, up2: -1e9, dn2: -1e9 }, order = ['up1', 'dn1', 'up2', 'dn2'];
+let html = '';
+for (const e of [...TIMELINE].sort((a, b) => a.year + (a.frac || 0) - b.year - (b.frac || 0))) {
+  const px = x(e.year + (e.frac || 0));
+  const lane = order.find(l => end[l] + GAP <= px - W / 2) || order.reduce((a, b) => (end[a] < end[b] ? a : b));
+  end[lane] = px + W / 2;
+  const up = lane.startsWith('up'), off = 5 + (lane.endsWith('2') ? LANE : 0);
+  const pos = up ? `bottom:calc(50% + ${off}mm)` : `top:calc(50% + ${off}mm)`;
+  const stem = up ? `bottom:50%; height:${off}mm` : `top:50%; height:${off}mm`;
+  html += `<div class="ev ${up ? 'up' : 'dn'}" style="left:${px}mm; ${pos}"><b>${e.year}</b><div class="ico">${e.icon || ''}</div><div>${e.what}</div></div><div class="tick" style="left:${px}mm; ${stem}"></div><div class="dot" style="left:${px}mm"></div>`;
+}
+tl.insertAdjacentHTML('beforeend', html);
+</script>
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design a Victorian bathing machine: printable sheets</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  /* one idea per page, with room to breathe */
+  .page { gap: 5mm; }
+  .lead { font-size: 12.5pt; line-height: 1.45; }
+  .h3 { font-family: var(--serif); font-weight: 700; font-size: 14pt; color: var(--ox); margin: 0 0 2mm; }
+
+  /* 1: design studio */
+  .refs2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .refs2 figure.ref { --h: 42mm; }
+  .studio { flex: 1; min-height: 0; border: 0.5mm solid var(--line); border-radius: 3mm; position: relative; overflow: hidden; }
+  .studio svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .studio .cap { position: absolute; left: 4mm; top: 3mm; font-size: 10pt; font-weight: 700; color: var(--grey); letter-spacing: .04em; text-transform: uppercase; }
+  .ticks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm 5mm; font-size: 11.5pt; }
+  .ticks div { display: flex; align-items: center; }
+
+  /* 2: inside */
+  .inside { display: grid; grid-template-columns: 1.15fr 1fr; gap: 6mm; flex: 1; min-height: 0; }
+  .cut { border: 0.5mm solid var(--line); border-radius: 3mm; position: relative; overflow: hidden; }
+  .cut svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .labels { display: grid; gap: 3.2mm; align-content: start; }
+  .labels .l { display: flex; gap: 2.5mm; align-items: baseline; font-weight: 700; font-size: 12pt; }
+  .labels .l span { flex: 1; border-bottom: 0.35mm solid var(--ink); height: 9mm; }
+  .moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; }
+  .moves div { border: 0.45mm solid var(--line); border-radius: 3mm; padding: 2.5mm 3mm; font-size: 11.5pt; display: flex; align-items: center; gap: 2.5mm; min-height: 15mm; }
+  .moves svg { width: 10mm; height: 10mm; flex: none; }
+
+  /* 3: how it worked */
+  .diagram { border: 0.5mm solid var(--line); border-radius: 3mm; padding: 3mm; }
+  .diagram svg { width: 100%; height: auto; display: block; }
+  .steps2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm 8mm; }
+  .steps2 .num { gap: 4mm; }
+  .steps2 .num li { font-size: 11.2pt; line-height: 1.38; }
+  .facts2 { columns: 2; column-gap: 8mm; padding-left: 5mm; margin: 0; font-size: 10.4pt; line-height: 1.36; }
+  .facts2 li { break-inside: avoid; margin-bottom: 2.4mm; }
+
+  /* 4: the model */
+  .net svg { width: 184mm; height: auto; display: block; }
+  .key { display: flex; gap: 8mm; align-items: center; font-size: 11pt; }
+  .key i { display: inline-block; width: 12mm; border-top: 0.5mm solid var(--ink); vertical-align: middle; margin-right: 2.5mm; }
+  .key i.d { border-top-style: dashed; }
+  .key i.t { height: 5mm; background: #e9e3d8; border: 0.3mm solid var(--ink); }
+  .make { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 8mm; }
+  .make .num li { font-size: 11.5pt; line-height: 1.4; }
+
+  /* 5: Margate */
+  .margate { display: grid; grid-template-columns: 1fr; gap: 5mm; }
+  .margate .pic { border: 0.5mm solid var(--line); border-radius: 3mm; padding: 3mm 6mm; }
+  .margate .pic svg { width: 116mm; height: auto; display: block; margin: 0 auto; }
+  .fav { flex: 1; min-height: 0; border: 0.45mm dashed var(--grey); border-radius: 3mm; padding: 3mm 4mm; }
+  .fav b { font-family: var(--serif); color: var(--ox); font-size: 13pt; }
+  .mlist { margin: 0; padding-left: 6mm; display: grid; gap: 3.5mm; font-size: 12pt; line-height: 1.45; }
+
+  /* 6: twenty ideas */
+  .ideas { display: grid; grid-template-columns: 1fr 1fr; gap: 3.6mm 8mm; font-size: 11pt; line-height: 1.32; }
+  .ideas div { display: flex; gap: 3mm; align-items: flex-start; }
+  .ideas svg { width: 11mm; height: 11mm; flex: none; }
+  .ideas b { font-family: var(--serif); font-size: 12pt; color: var(--ink); display: block; }
+  .yours { border: 0.45mm dashed var(--grey); border-radius: 3mm; padding: 3mm 4mm; font-size: 11.5pt; }
+  .yours .ln { height: 9mm; border-bottom: 0.3mm solid var(--grey); }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../tasks/bathing-machine.html">← Design a bathing machine</a><small>6 pages, A4</small></div><a class="b ghost" href="../pdf/bathing-machine.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<!-- Page 1: design studio -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>My bathing machine: design studio</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">A bathing machine was a little hut on wheels that carried a swimmer down the beach and into the sea. Here are real ones. Now design your own! It can be sensible or silly. Draw it big, on the beach below.</p>
+  <div class="refs2">
+    <figure class="ref" data-img="bathing-machines.jpg" data-cap="Ordinary bathing machines at Shanklin, 1889" style="--pos: 50% 55%"></figure>
+    <figure class="ref" data-img="osborne-machine-side.jpg" data-cap="Queen Victoria's own, at Osborne" style="--pos: 50% 32%"></figure>
+  </div>
+  <div class="studio">
+    <span class="cap">Side view: draw your machine here</span>
+    <svg viewBox="0 0 184 150" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 118 C 30 112, 60 120, 90 116 S 150 110, 184 112 L184 150 L0 150 Z" fill="#f4efe6"/>
+      <path d="M110 150 L184 150 L184 112 C 160 111, 140 118, 118 122 Z" fill="#e6eef0"/>
+      <g fill="none" stroke="#b9c7cb" stroke-width="0.6"><path d="M122 130c4-3 8-3 12 0s8 3 12 0 8-3 12 0 8 3 12 0"/><path d="M130 140c4-3 8-3 12 0s8 3 12 0 8-3 12 0 8 3 12 0"/></g>
+      <circle cx="160" cy="26" r="9" fill="none" stroke="#e3d9c5" stroke-width="0.8"/>
+      <text x="8" y="146" font-family="Lexend" font-size="4.5" fill="#6b635a">sand</text>
+      <text x="170" y="146" font-family="Lexend" font-size="4.5" fill="#6b635a" text-anchor="end">sea</text>
+    </svg>
+  </div>
+  <div class="box" style="padding: 3.5mm 5mm">
+    <h3>Don't forget…</h3>
+    <div class="ticks">
+      <div><span class="chk"></span>big wheels</div><div><span class="chk"></span>a door at the sea end</div><div><span class="chk"></span>steps into the water</div>
+      <div><span class="chk"></span>a small window</div><div><span class="chk"></span>a roof</div><div><span class="chk"></span>a flag, name or number</div>
+      <div><span class="chk"></span>stripes or a pattern</div><div><span class="chk"></span>how it moves</div><div><span class="chk"></span>who is swimming today?</div>
+    </div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 1 of 6</div></footer>
+</section>
+
+<!-- Page 2: inside and how it moves -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Inside my bathing machine</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Take the side off and look inside. What would a Victorian swimmer need? A seat, a towel rail, hooks for clothes, a mirror, a bucket… and what would you add? Draw it, then label it.</p>
+  <div class="inside">
+    <div class="cut">
+      <svg viewBox="0 0 110 150" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M6 44 L55 10 L104 44" fill="none" stroke="#cfc7ba" stroke-width="0.8"/>
+        <path d="M10 44 L10 124 L100 124 L100 44" fill="none" stroke="#cfc7ba" stroke-width="0.8"/>
+        <path d="M10 124 L100 124" stroke="#cfc7ba" stroke-width="2"/>
+        <circle cx="30" cy="136" r="9" fill="none" stroke="#cfc7ba" stroke-width="0.8"/><circle cx="80" cy="136" r="9" fill="none" stroke="#cfc7ba" stroke-width="0.8"/>
+        <text x="55" y="30" text-anchor="middle" font-family="Lexend" font-size="5" fill="#b8b0a4">cut-away view</text>
+      </svg>
+    </div>
+    <div>
+      <div class="h3">Inside there is…</div>
+      <div class="labels">
+        <div class="l">1 <span></span></div><div class="l">2 <span></span></div><div class="l">3 <span></span></div>
+        <div class="l">4 <span></span></div><div class="l">5 <span></span></div><div class="l">6 <span></span></div>
+      </div>
+      <div class="h3" style="margin-top:6mm">My machine is called</div>
+      <div class="labels"><div class="l"><span></span></div></div>
+    </div>
+  </div>
+  <div>
+    <div class="h3">It moves because…</div>
+    <div class="moves">
+      <div><span class="chk"></span><svg viewBox="0 0 40 40" class="line"><path d="M10 34V22c0-6 4-12 10-14l6-4 2 6c4 2 6 6 4 10l-6-2-4 4v12"/><circle cx="23" cy="13" r="1.2"/></svg>a horse pulls it</div>
+      <div><span class="chk"></span><svg viewBox="0 0 40 40" class="line"><rect x="8" y="22" width="24" height="10" rx="2"/><path d="M14 22v-6h6v6"/><path d="M17 12c-3-2-1-6 3-5 1-3 7-3 8 1 4 0 4 5 0 6"/><circle cx="13" cy="34" r="2"/><circle cx="27" cy="34" r="2"/></svg>a steam engine</div>
+      <div><span class="chk"></span><svg viewBox="0 0 40 40" class="line"><path d="M20 4v28"/><path d="M20 6c10 4 12 12 10 20H20"/><path d="M20 10c-8 4-8 10-6 14h6"/><path d="M8 34h24"/></svg>sails and wind</div>
+      <div><span class="chk"></span><svg viewBox="0 0 40 40" class="line"><circle cx="13" cy="10" r="3.5"/><path d="M13 14v10l-4 10M13 24l4 10M8 18l10 2"/><circle cx="28" cy="10" r="3.5"/><path d="M28 14v10l-4 10M28 24l4 10M22 20l10-2"/></svg>people push it</div>
+      <div><span class="chk"></span><svg viewBox="0 0 40 40" class="line"><path d="M20 4c6 4 8 12 6 20h-12c-2-8 0-16 6-20z"/><circle cx="20" cy="14" r="2.5"/><path d="M14 24l-4 6 6-2M26 24l4 6-6-2M17 28l3 8 3-8"/></svg>rockets!</div>
+      <div><span class="chk"></span><svg viewBox="0 0 40 40" class="line"><path d="M14 26c-4-3-6-7-6-11a12 12 0 0 1 24 0c0 4-2 8-6 11v4H14z"/><path d="M15 34h10M20 6V2M5 15H2M38 15h-3"/></svg>my own idea</div>
+    </div>
+  </div>
+  <div class="box dash" style="padding: 3.5mm 5mm"><h3>What if…</h3><p style="margin:0; font-size:11.5pt; line-height:1.45">…it floated like a boat? …it had a slide straight into the sea? …it was for a dog, a queen, or a whole class? …it could go under the water? Draw your best "what if" on the back of this sheet.</p></div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 2 of 6</div></footer>
+</section>
+
+<!-- Page 3: how the real ones worked -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>How a real bathing machine worked</div><div class="pts">10<small>POINTS</small></div></header>
+  <div class="diagram">
+    <svg viewBox="0 0 184 92" aria-label="A bathing machine on the beach, pulled by a horse, with its parts numbered">
+      <path d="M0 72 C 40 68, 80 74, 120 70 S 170 66, 184 68 L184 92 L0 92 Z" fill="#f4efe6"/>
+      <path d="M116 92 L184 92 L184 68 C 168 68, 148 72, 124 76 Z" fill="#e6eef0"/>
+      <g fill="none" stroke="#9fb3b8" stroke-width="0.6"><path d="M130 84c3-2 6-2 9 0s6 2 9 0 6-2 9 0 6 2 9 0 6-2 9 0"/></g>
+      <!-- the horse and its rope -->
+      <g fill="#fff" stroke="#1f1a17" stroke-width="0.9" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M14 50 C 14 44, 20 42, 28 43 C 32 43, 34 46, 34 50 C 34 54, 28 55, 22 55 C 17 55, 14 54, 14 50 Z"/>
+        <path d="M16 47 L12 39 L8 38 L7 41 L11 43 L14 49"/>
+        <path d="M17 54 L16 66 M20 55 L20 66 M28 55 L28 66 M31 54 L32 66"/>
+        <path d="M34 47 C 37 48, 38 52, 37 56"/>
+        <path d="M34 49 L58 49"/>
+      </g>
+      <!-- the hut -->
+      <g fill="#fff" stroke="#1f1a17" stroke-width="0.9" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="58" y="30" width="54" height="32"/>
+        <path d="M54 30 L85 14 L116 30 Z"/>
+        <path d="M85 14 L85 5 L94 7 L85 9"/>
+        <rect x="64" y="36" width="9" height="8"/>
+        <rect x="100" y="38" width="10" height="24"/>
+        <path d="M113 30 Q 127 28, 129 36 L129 52"/>
+        <circle cx="68" cy="66" r="6.5"/><circle cx="102" cy="66" r="6.5"/>
+        <circle cx="68" cy="66" r="1.3"/><circle cx="102" cy="66" r="1.3"/>
+        <path d="M112 62 L117 62 L117 66 L122 66 L122 70 L127 70 L127 74 L132 74"/>
+      </g>
+      <!-- labels, outside the drawing, with leader lines -->
+      <g stroke="#6b635a" stroke-width="0.35" fill="none">
+        <path d="M101 7 L95 7"/><path d="M141 21 L130 30"/><path d="M141 42 L111 46"/><path d="M137 84 L130 75"/><path d="M57 84 L66 73"/><path d="M30 28 L44 48"/>
+      </g>
+      <g font-family="Lexend" font-size="4.6" fill="#1f1a17">
+        <text x="103" y="8.5"><tspan font-weight="700" fill="#ad4119">1</tspan><tspan dx="1.5">roof and flag</tspan></text>
+        <text x="4" y="26"><tspan font-weight="700" fill="#ad4119">2</tspan><tspan dx="1.5">rope to the horse</tspan></text>
+        <text x="38" y="89"><tspan font-weight="700" fill="#ad4119">3</tspan><tspan dx="1.5">big wheels</tspan></text>
+        <text x="143" y="40"><tspan font-weight="700" fill="#ad4119">4</tspan><tspan dx="1.5">door at</tspan></text>
+        <text x="147.6" y="45.5">the sea end</text>
+        <text x="139" y="89"><tspan font-weight="700" fill="#ad4119">5</tspan><tspan dx="1.5">steps into the sea</tspan></text>
+        <text x="143" y="20"><tspan font-weight="700" fill="#ad4119">6</tspan><tspan dx="1.5">canvas hood</tspan></text>
+      </g>
+    </svg>
+  </div>
+  <div class="steps2">
+    <ol class="num">
+      <li>You climb in at the beach end and shut the door.</li>
+      <li>Inside, you change into your bathing costume while the machine is pulled down the sand, usually by a horse.</li>
+      <li>In the water, the door at the sea end opens. You go down the steps into the sea, where nobody on the beach can see you.</li>
+    </ol>
+    <ol class="num" start="4" style="counter-reset: n 3">
+      <li>A strong helper called a "dipper" is there to hold you and dip you under the waves.</li>
+      <li>Raise the little flag to tell the driver you are ready. Climb back in, dry off and get dressed while the machine is pulled back up the beach.</li>
+      <li>Some machines had a canvas hood over the sea door, so the bather was hidden completely.</li>
+    </ol>
+  </div>
+  <div class="box" style="padding: 4mm 5mm">
+    <h3>Did you know?</h3>
+    <ul id="bmfacts" class="facts2"></ul>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 3 of 6</div></footer>
+</section>
+
+<!-- Page 4: cut-out model -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Make a model bathing machine</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Colour it first, then cut on the solid lines and fold on the dashed lines. Print on card if you can. Ask a grown-up to help with the cutting.</p>
+  <div class="net">
+    <svg viewBox="0 0 184 182" aria-label="Net of a bathing machine to cut out">
+      <defs><style>
+        .c{fill:#fff;stroke:#1f1a17;stroke-width:0.45}
+        .f{fill:none;stroke:#1f1a17;stroke-width:0.35;stroke-dasharray:2 1.5}
+        .tab{fill:#ece6da;stroke:#1f1a17;stroke-width:0.4}
+        .lbl{font-family:Lexend,sans-serif;font-size:4.2px;fill:#6f675e}
+        .dec{fill:none;stroke:#cfc7ba;stroke-width:0.4}
+      </style></defs>
+      <polygon class="tab" points="45,16 86,16 84,10 47,10"/>
+      <polygon class="tab" points="130,16 171,16 169,10 132,10"/>
+      <polygon class="tab" points="173,18 181,22 181,60 173,64"/>
+      <path class="c" d="M3 16 L23 2 L43 16 L43 66 L3 66 Z M43 16 L88 16 L88 66 L43 66 Z M88 16 L108 2 L128 16 L128 66 L88 66 Z M128 16 L173 16 L173 66 L128 66 Z"/>
+      <path class="f" d="M43 16 L43 66 M88 16 L88 66 M128 16 L128 66 M3 16 L43 16 M88 16 L128 16"/>
+      <polygon class="tab" points="37,68 43,68 43,104 37,102"/>
+      <polygon class="tab" points="88,68 94,70 94,102 88,104"/>
+      <polygon class="tab" points="43,106 88,106 86,112 45,112"/>
+      <rect class="c" x="43" y="66" width="45" height="40"/>
+      <path class="f" d="M43 66 L88 66"/>
+      <path class="c" d="M15 36 L31 36 L31 66" />
+      <path class="f" d="M15 36 L15 66"/>
+      <circle class="dec" cx="28" cy="52" r="0.9"/>
+      <rect class="dec" x="56" y="24" width="9" height="8"/><rect class="dec" x="141" y="24" width="9" height="8"/>
+      <rect class="dec" x="100" y="24" width="8" height="8"/>
+      <text class="lbl" x="23" y="30" text-anchor="middle">front</text>
+      <text class="lbl" x="65.5" y="48" text-anchor="middle">side: add stripes!</text>
+      <text class="lbl" x="108" y="46" text-anchor="middle">back:</text>
+      <text class="lbl" x="108" y="51" text-anchor="middle">name or number</text>
+      <text class="lbl" x="150.5" y="48" text-anchor="middle">side</text>
+      <text class="lbl" x="65.5" y="88" text-anchor="middle">floor</text>
+      <text class="lbl" x="177" y="42" text-anchor="middle" transform="rotate(90 177 42)">glue</text>
+      <rect class="c" x="3" y="118" width="49" height="54"/>
+      <path class="f" d="M3 145 L52 145"/>
+      <text class="lbl" x="27.5" y="134" text-anchor="middle">roof: fold in</text>
+      <text class="lbl" x="27.5" y="139" text-anchor="middle">the middle</text>
+      <path class="dec" d="M8 124 L47 124 M8 128 L47 128 M8 152 L47 152 M8 156 L47 156 M8 164 L47 164"/>
+      <circle class="c" cx="72" cy="131" r="12"/><circle class="c" cx="98" cy="131" r="12"/>
+      <circle class="c" cx="72" cy="159" r="12"/><circle class="c" cx="98" cy="159" r="12"/>
+      <circle class="dec" cx="72" cy="131" r="2"/><circle class="dec" cx="98" cy="131" r="2"/><circle class="dec" cx="72" cy="159" r="2"/><circle class="dec" cx="98" cy="159" r="2"/>
+      <path class="dec" d="M72 121v20M62 131h20M98 121v20M88 131h20M72 149v20M62 159h20M98 149v20M88 159h20"/>
+      <text class="lbl" x="85" y="177" text-anchor="middle">4 wheels</text>
+      <rect class="c" x="118" y="118" width="30" height="56"/>
+      <path class="f" d="M118 126h30M118 134h30M118 142h30M118 150h30M118 158h30M118 166h30"/>
+      <text class="lbl" x="133" y="180" text-anchor="middle">steps: zigzag fold</text>
+      <path class="c" d="M156 118 L180 118 L172 125 L180 132 L156 132 Z"/>
+      <text class="lbl" x="168" y="138.5" text-anchor="middle">flag: on a</text>
+      <text class="lbl" x="168" y="143.5" text-anchor="middle">cocktail stick</text>
+      <rect class="c" x="156" y="152" width="26" height="14"/>
+      <text class="lbl" x="169" y="171.5" text-anchor="middle">door sign</text>
+    </svg>
+  </div>
+  <div class="key"><span><i></i>cut</span><span><i class="d"></i>fold</span><span><i class="t"></i>glue tab</span></div>
+  <div class="make">
+    <ol class="num"><li>Fold the four walls round into a box and glue the side tab.</li><li>Fold the floor in and glue its tabs inside.</li></ol>
+    <ol class="num" style="counter-reset: n 2"><li>Fold the roof in the middle and glue it on the top tabs.</li><li>Stick on the wheels, and the zigzag steps under the door.</li></ol>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 4 of 6</div></footer>
+</section>
+
+<!-- Page 5: the Margate sauna machine -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>A bathing machine today</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Bathing machines never quite went away. In 2019 a seaside skincare company called Haeckels put a brand-new one on the sands at Margate, with a sauna inside.</p>
+  <div class="margate">
+    <div class="pic">
+      <svg viewBox="0 0 120 86" aria-label="Drawing of a modern wooden bathing machine with a sauna chimney">
+        <path d="M0 70 C 30 66, 70 72, 120 68 L120 86 L0 86 Z" fill="#f4efe6"/>
+        <path d="M86 86 L120 86 L120 68 C 108 69, 96 72, 88 76 Z" fill="#e6eef0"/>
+        <g fill="#fff" stroke="#1f1a17" stroke-width="0.7" stroke-linejoin="round" stroke-linecap="round">
+          <rect x="26" y="26" width="54" height="34"/>
+          <path d="M22 26 L53 12 L84 26 Z"/>
+          <path d="M30 32h46M30 38h46M30 44h46M30 50h46M30 56h46" stroke="#cfc7ba" stroke-width="0.45"/>
+          <rect x="62" y="30" width="10" height="9"/>
+          <path d="M62 16 h6 v6" /><path d="M64 14c1-3 3-3 3-6M68 12c-1-3 1-4 1-6" stroke="#6b635a"/>
+          <path d="M26 40 L8 40 L8 60 L26 60" /><path d="M8 40 L8 46 L26 46" stroke-dasharray="1.5 1"/>
+          <circle cx="38" cy="66" r="7"/><circle cx="68" cy="66" r="7"/>
+          <path d="M38 59v14M31 66h14M68 59v14M61 66h14M33 61l10 10M43 61l-10 10M63 61l10 10M73 61l-10 10" stroke-width="0.45"/>
+          <path d="M80 48 L92 48 L92 54 L98 54 L98 60 L104 60 L104 66" />
+        </g>
+        <g font-family="Lexend" font-size="3.6" fill="#1f1a17"><text x="3" y="37">awning</text><text x="70" y="9">stove chimney</text><text x="94" y="50">fold-up steps</text><text x="40" y="81">oak wheels</text></g>
+      </svg>
+    </div>
+    <ul class="mlist">
+      <li>A wooden hut on big oak wheels with a steel frame, built the way the Victorian ones were.</li>
+      <li>Inside is a wood-burning sauna. You get hot, then sprint into the cold sea a few metres away.</li>
+      <li>The steps fold up to become the door, and a waxed cloth awning rolls out over the front.</li>
+      <li>Twenty people helped build it: an architect, joiners, a sauna maker and a wheelwright who makes wooden wheels.</li>
+      <li>It was paid for by lots of people chipping in, and their names are engraved on the side. Anyone can use it for free.</li>
+    </ul>
+  </div>
+  <div class="yours"><b style="font-family:var(--serif); color:var(--ox); font-size:13pt">What would you put in a modern one?</b><div class="ln"></div><div class="ln"></div></div>
+  <p class="tiny" style="margin:0">Source: Dezeen, "Haeckels' Victorian bathing machine warms up winter seaside dippers", 23 December 2019. Photos are on dezeen.com; the link is on the website.</p>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 5 of 6</div></footer>
+</section>
+
+<!-- Page 6: twenty ideas -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Twenty ideas to make yours modern</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Borrow one, or mix three together. Tick the ones you like best.</p>
+  <div class="ideas">
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M6 10l8 8-8 8 8 8M16 6l8 8-8 8 8 8M26 6l8 8-8 8 8 8"/></svg><span><b>Dazzle stripes</b>Black-and-white zigzags so it hides against the sea.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M6 24l6-12h22l-6 12z"/><path d="M12 18h18M9 21h18M20 24v8M14 32h12"/></svg><span><b>Solar roof</b>Panels that warm the shower and light the inside.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M18 34V14a6 6 0 0 1 6-6h4"/><path d="M14 34h8M24 10h6v6h-6z"/></svg><span><b>Periscope</b>Spy on the beach like a submarine.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><rect x="4" y="22" width="32" height="10" rx="5"/><circle cx="10" cy="27" r="2"/><circle cx="20" cy="27" r="2"/><circle cx="30" cy="27" r="2"/><rect x="10" y="10" width="20" height="12"/></svg><span><b>Caterpillar tracks</b>Crawl over rocks and sand like a tank.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M6 8h10v14c0 6 6 10 14 10h4"/><path d="M8 32h6M30 32l4 2-4 2"/></svg><span><b>Fold-out slide</b>Straight from the sea door into the waves.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M8 34V18l12-8 12 8v16z"/><path d="M24 12v-6h4v9"/><path d="M14 34v-8h12v8M18 28c1-2 3-2 4 0"/></svg><span><b>Sauna stove</b>A little chimney, like Margate's, to warm up after a dip.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M6 20h28v14H6z"/><path d="M8 20c2-6 4-6 6 0M14 20c2-6 4-6 6 0M20 20c2-6 4-6 6 0M26 20c2-6 4-6 6 0"/><circle cx="12" cy="14" r="1.5"/><circle cx="26" cy="12" r="1.5"/></svg><span><b>Living roof</b>Grass, flowers and a bee hotel on top.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><rect x="8" y="8" width="24" height="24"/><path d="M12 28L28 12M18 30l12-12"/></svg><span><b>Mirror walls</b>Shiny sides, so it vanishes into the sea and the sky.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M6 22c4-8 12-12 20-10 6 2 8 6 8 10-4 4-10 6-16 4l-6 6 2-8c-4-1-7-1-8-2z"/><circle cx="24" cy="18" r="1.2"/><path d="M30 10l4-4 2 6"/></svg><span><b>Whale shape</b>The door is its mouth and the tail is a diving board.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><rect x="12" y="12" width="16" height="12"/><path d="M12 18l-6 6 2 6M28 18l6 6-2 6M14 24l-2 8M26 24l2 8M8 12l4 2M32 12l-4 2"/></svg><span><b>Crab legs</b>It walks itself into the sea. No horse needed.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M6 14c6 6 22 6 28 0"/><circle cx="10" cy="17" r="1.5"/><circle cx="20" cy="18" r="1.5"/><circle cx="30" cy="17" r="1.5"/><path d="M14 28l2-4 2 4-4-2h6"/><path d="M26 30l2-4 2 4-4-2h6"/></svg><span><b>Glow lights</b>Colour-changing lights and glow stars on the ceiling.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M20 6v26M20 8c10 2 12 10 10 18H20M20 10c-8 4-8 10-6 14h6"/><path d="M8 34h24"/></svg><span><b>Sails</b>A mast and sails, so the wind pushes it along the sand.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><circle cx="20" cy="22" r="8"/><path d="M20 14v-4M20 30v4M12 22h-4M28 22h4M20 22l5-5"/></svg><span><b>Pedal power</b>Bicycle pedals inside: you pedal it into the sea.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><rect x="6" y="8" width="28" height="22"/><path d="M6 30l28-22"/><path d="M12 24c3-2 6-2 9 0M22 16c2-1 4-1 6 0"/><circle cx="26" cy="24" r="1"/></svg><span><b>Glass floor</b>A window in the floor to watch the fish and the crabs.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M10 14h12v18H10z"/><path d="M10 20h12M10 26h12"/><path d="M28 10v22M28 10l6 4-6 4M28 18l-6 4 6 4"/></svg><span><b>Rain barrel and turbine</b>Rain for the shower, wind for the lights.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M6 32l14-20 14 20z"/><path d="M14 32l6-10 6 10"/></svg><span><b>Fold-up</b>It folds flat like a tent and fits in the car boot.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><rect x="8" y="18" width="24" height="14"/><rect x="8" y="6" width="24" height="12"/><path d="M32 8h6M12 32v4M28 32v4"/></svg><span><b>Double-decker</b>A bunk on top, with a diving board.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M10 34V6M10 6h18l-6 6 6 6H10"/></svg><span><b>Name, number, flag</b>A boat name, a number like Shanklin's, your own flag.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><rect x="6" y="14" width="28" height="18"/><rect x="10" y="20" width="20" height="8"/><circle cx="20" cy="24" r="1.2"/><path d="M14 14V8h12v6"/></svg><span><b>Secret drawer</b>For treasure and shells, and a bell to ring when you are ready.</span></div>
+    <div><svg viewBox="0 0 40 40" class="line"><path d="M8 32c4-10 4-18 12-22 8 4 8 12 12 22"/><path d="M12 22c4-2 8-2 12 0M10 28c6-3 14-3 20 0"/><circle cx="20" cy="14" r="2"/></svg><span><b>Victorian wallpaper</b>Inside, paper the walls with William Morris birds and flowers.</span></div>
+  </div>
+  <div class="fav"><b>Draw your favourite idea</b></div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 6 of 6</div></footer>
+</section>
+
+<script type="module">
+import { BM_SHEET } from '../js/bathing.js';
+document.getElementById('bmfacts').innerHTML = BM_SHEET.map(f => `<li>${f.kid}</li>`).join('');
+</script>
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

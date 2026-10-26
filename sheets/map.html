@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A map with a key: printable sheets</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  .mapgrid { flex: 1; min-height: 0; border: 0.5mm solid var(--line); border-radius: 3mm; position: relative; overflow: hidden;
+    background-image: linear-gradient(to right, #ddd6c9 0.25mm, transparent 0.25mm), linear-gradient(to bottom, #ddd6c9 0.25mm, transparent 0.25mm);
+    background-size: 10mm 10mm; background-position: 0 0; }
+  .mapgrid .title { position: absolute; left: 4mm; top: 3mm; right: 44mm; display: flex; gap: 3mm; align-items: baseline; font-weight: 700; font-size: 14pt; background: #fff; padding: 1mm 2mm; }
+  .mapgrid .title span { flex: 1; border-bottom: 0.4mm solid var(--ink); }
+  .compass { position: absolute; right: 4mm; top: 3mm; width: 34mm; height: 34mm; background: #fff; border-radius: 50%; }
+  .key { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 8mm; }
+  .key .k { display: flex; gap: 3mm; align-items: center; }
+  .key .k i { width: 11mm; height: 9mm; border: 0.4mm solid var(--line); border-radius: 1.5mm; flex: none; }
+  .key .k span { flex: 1; border-bottom: 0.35mm solid var(--ink); height: 8mm; }
+  .sym { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.6mm; }
+  .sym .s { border: 0.4mm dashed var(--line); border-radius: 3mm; padding: 1.6mm; display: flex; flex-direction: column; align-items: center; gap: 1mm; }
+  .sym .s svg { width: 14.5mm; height: 14.5mm; }
+  .sym .s b { font-size: 10pt; font-weight: 500; }
+  .sym .s.blank { min-height: 21.5mm; justify-content: flex-end; color: var(--grey); font-size: 9pt; }
+  .steps6 { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .steps6 .st { display: grid; grid-template-columns: 18mm 1fr; gap: 3mm; align-items: center; border: 0.4mm solid var(--line); border-radius: 2.5mm; padding: 2.5mm 3mm; }
+  .steps6 .st svg { width: 18mm; height: 18mm; }
+  .steps6 .st b { display: block; font-family: var(--serif); color: var(--ox); font-size: 12pt; }
+  .steps6 .st p { margin: 0; font-size: 10.5pt; }
+  .birds { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; align-items: center; }
+  .birds svg { width: 100%; height: 34mm; }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../tasks/map.html">← A map with a key</a><small>3 pages, A4</small></div><a class="b ghost" href="../pdf/map.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<!-- Page 1: the map sheet -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>My map</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">Draw your home, your garden or a place you know well, as a bird would see it from above. Use the same little symbol every time you draw the same kind of thing, then explain each symbol in the key.</p>
+  <div class="mapgrid">
+    <div class="title">A map of <span></span></div>
+    <svg class="compass" viewBox="0 0 100 100" aria-label="Compass rose">
+      <circle cx="50" cy="50" r="44" fill="#fff" stroke="#1f1a17" stroke-width="1.5"/>
+      <polygon points="50,16 56,50 50,46 44,50" fill="#ad4119"/>
+      <polygon points="50,84 56,50 50,54 44,50" fill="#fff" stroke="#1f1a17" stroke-width="1.2"/>
+      <polygon points="18,50 50,44 46,50 50,56" fill="#fff" stroke="#1f1a17" stroke-width="1.2"/>
+      <polygon points="82,50 50,44 54,50 50,56" fill="#fff" stroke="#1f1a17" stroke-width="1.2"/>
+      <text x="50" y="11" text-anchor="middle" font-family="Lexend, sans-serif" font-weight="700" font-size="13" fill="#1f1a17">N</text>
+      <text x="50" y="99" text-anchor="middle" font-family="Lexend, sans-serif" font-weight="700" font-size="13" fill="#1f1a17">S</text>
+      <text x="4" y="55" text-anchor="start" font-family="Lexend, sans-serif" font-weight="700" font-size="13" fill="#1f1a17">W</text>
+      <text x="96" y="55" text-anchor="end" font-family="Lexend, sans-serif" font-weight="700" font-size="13" fill="#1f1a17">E</text>
+    </svg>
+  </div>
+  <div class="box">
+    <h3>Key</h3>
+    <div class="key">
+      <div class="k"><i></i><span></span></div><div class="k"><i></i><span></span></div>
+      <div class="k"><i></i><span></span></div><div class="k"><i></i><span></span></div>
+      <div class="k"><i></i><span></span></div><div class="k"><i></i><span></span></div>
+    </div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 1 of 3</div></footer>
+</section>
+
+<!-- Page 2: symbol ideas -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Map symbols to copy</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead">A symbol is a tiny, simple drawing that stands for a real thing. Copy the ones you need, or invent your own in the empty boxes.</p>
+  <div class="sym">
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><circle cx="20" cy="16" r="10"/><path d="M20 26v10M16 36h8"/></svg><b>tree</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M8 30c-4-8 2-16 12-14 10-2 16 6 12 14z"/><path d="M8 30h24"/></svg><b>bush</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><circle cx="13" cy="15" r="3"/><circle cx="27" cy="12" r="3"/><circle cx="21" cy="24" r="3"/><path d="M13 18v12M27 15v15M21 27v6"/></svg><b>flowers</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 22c4-8 24-10 28-2 2 6-6 12-16 12S4 28 6 22z"/><path d="M12 24c3-2 6-2 9 0s6 2 9 0"/></svg><b>pond</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 34c8-8 6-16 14-20s8-6 14-8" stroke-dasharray="4 3"/></svg><b>path</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M4 20h32M4 28h32M8 14v18M16 14v18M24 14v18M32 14v18"/></svg><b>fence</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M8 12v18M32 12v18M8 16h24M8 26h24M8 16l24 10"/></svg><b>gate</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M10 34V8h20v26"/><circle cx="25" cy="22" r="1.5"/><path d="M6 34h28"/></svg><b>door</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><rect x="8" y="8" width="24" height="24"/><path d="M20 8v24M8 20h24"/></svg><b>window</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><rect x="6" y="12" width="28" height="16" rx="2"/><path d="M10 28v6M30 28v6"/></svg><b>table</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><rect x="6" y="8" width="28" height="26" rx="2"/><rect x="10" y="11" width="20" height="6" rx="2"/></svg><b>bed</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 18v12h28V18"/><rect x="10" y="12" width="20" height="12" rx="2"/><path d="M6 18a3 3 0 0 1 4 0v6M34 18a3 3 0 0 0-4 0v6"/></svg><b>sofa</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><rect x="6" y="9" width="28" height="18" rx="1"/><path d="M14 33h12M20 27v6"/></svg><b>TV</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 18h28v6a8 8 0 0 1-8 8H14a8 8 0 0 1-8-8z"/><path d="M10 18V10a4 4 0 0 1 8 0"/><path d="M10 32v3M30 32v3"/></svg><b>bath</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><rect x="12" y="6" width="16" height="10" rx="2"/><path d="M8 18h24v4a8 8 0 0 1-8 8h-8a8 8 0 0 1-8-8z"/><path d="M16 30v4h8v-4"/></svg><b>toilet</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><rect x="6" y="8" width="28" height="26" rx="2"/><path d="M6 20h28"/><circle cx="13" cy="14" r="3"/><circle cx="27" cy="14" r="3"/><circle cx="13" cy="27" r="3"/><circle cx="27" cy="27" r="3"/></svg><b>cooker</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><rect x="10" y="6" width="20" height="30" rx="2"/><path d="M10 16h20M14 10v3M14 20v6"/></svg><b>fridge</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 34h7v-7h7v-7h7v-7h7"/></svg><b>stairs</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 26v-8l5-7h18l5 7v8z"/><circle cx="13" cy="28" r="3"/><circle cx="27" cy="28" r="3"/><path d="M11 18h18"/></svg><b>car</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M8 34V16l12-8 12 8v18z"/><path d="M16 34V24h8v10"/></svg><b>shed</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 34L14 8h12l8 26"/><path d="M15 12l-2 16h14l-2-16"/><path d="M13 28h14"/></svg><b>swing</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><ellipse cx="20" cy="18" rx="15" ry="6"/><path d="M6 18v8M34 18v8M12 23v10M28 23v10"/></svg><b>trampoline</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M10 12h20l-2 22H12z"/><path d="M8 12h24M16 8h8v4"/><path d="M16 17v13M24 17v13"/></svg><b>bin</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M12 34V12a8 8 0 0 1 16 0v22"/><path d="M12 34h16M14 18h12"/></svg><b>post box</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 34V20l10-6 10 6v14z"/><path d="M26 20V12h6v22M29 6v6M27 9h4"/></svg><b>church</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M4 34V18h32v16z"/><path d="M12 18v-6h16v6M18 8h4v4"/><path d="M10 24h4M18 24h4M26 24h4M10 29h4M26 29h4M18 34v-6h4v6"/></svg><b>school</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 16l3-6h22l3 6"/><path d="M6 16c0 3 2 4 4 4s4-1 4-4c0 3 2 4 4 4s4-1 4-4c0 3 2 4 4 4s4-1 4-4c0 3 2 4 4 4s4-1 4-4"/><path d="M9 20v14h22V20M16 34V26h8v8"/></svg><b>shop</b></div>
+    <div class="s"><svg viewBox="0 0 40 40" class="line"><path d="M6 30c6-14 22-14 28 0"/><path d="M10 30h20"/><circle cx="20" cy="12" r="4"/></svg><b>hill</b></div>
+    <div class="s blank">my own symbol</div>
+    <div class="s blank">my own symbol</div>
+    <div class="s blank">my own symbol</div>
+    <div class="s blank">my own symbol</div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 2 of 3</div></footer>
+</section>
+
+<!-- Page 3: how to make a map -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>How to make a map</div><div class="pts">10<small>POINTS</small></div></header>
+  <div class="steps6">
+    <div class="st"><svg viewBox="0 0 40 40" class="line"><path d="M12 36l4-12-4-8 8-6 8 6-4 8 4 12"/><circle cx="20" cy="6" r="3"/></svg><div><b>1. Walk around it</b><p>Walk round the place with a grown-up. Look at what is where: what is next to what, and what is far apart.</p></div></div>
+    <div class="st"><svg viewBox="0 0 40 40" class="line"><rect x="8" y="6" width="24" height="28" rx="2"/><path d="M13 14h14M13 20h14M13 26h8"/></svg><div><b>2. Choose what to show</b><p>Pick 6 to 10 important things: doors, trees, the pond, the shed, your bed. A map does not need everything.</p></div></div>
+    <div class="st"><svg viewBox="0 0 40 40" class="line"><path d="M6 10h28v22H6z"/><path d="M6 22h12v10M18 10v12"/></svg><div><b>3. Draw the outline from above</b><p>Imagine you are a bird looking straight down. Draw the edge of the room or garden first, then the big things inside it.</p></div></div>
+    <div class="st"><svg viewBox="0 0 40 40" class="line"><circle cx="12" cy="12" r="5"/><rect x="22" y="8" width="10" height="8"/><path d="M8 28c3-4 8-4 12 0s8 4 12 0"/></svg><div><b>4. Add symbols</b><p>Use a small, simple symbol for each thing. Use the same symbol every time you draw a tree, a door or a window.</p></div></div>
+    <div class="st"><svg viewBox="0 0 40 40" class="line"><rect x="6" y="8" width="28" height="24" rx="2"/><rect x="10" y="12" width="6" height="5"/><path d="M19 15h11"/><rect x="10" y="21" width="6" height="5"/><path d="M19 24h11"/></svg><div><b>5. Make the key</b><p>In the key, draw each symbol once and write what it means. A map reader uses the key to understand your map.</p></div></div>
+    <div class="st"><svg viewBox="0 0 40 40" class="line"><circle cx="20" cy="20" r="14"/><path d="M20 6l4 14-4-3-4 3z"/><path d="M20 34l4-14-4 3-4-3z"/></svg><div><b>6. Compass and title</b><p>Add a compass with N for north at the top, and a title such as "A map of my garden". Done!</p></div></div>
+  </div>
+  <div class="box">
+    <h3>What is a bird's-eye view?</h3>
+    <div class="birds">
+      <div><svg viewBox="0 0 120 60" class="line"><path d="M14 44h48v4H14zM20 48v8M56 48v8M22 30h32v14H22z" /><text x="74" y="22" font-size="8" fill="#1f1a17" stroke="none" font-family="Lexend">from the side:</text><text x="74" y="34" font-size="8" fill="#1f1a17" stroke="none" font-family="Lexend">a table has legs</text></svg></div>
+      <div><svg viewBox="0 0 120 60" class="line"><rect x="14" y="14" width="46" height="32" rx="2"/><circle cx="17" cy="17" r="1.5"/><circle cx="57" cy="17" r="1.5"/><circle cx="17" cy="43" r="1.5"/><circle cx="57" cy="43" r="1.5"/><text x="68" y="22" font-size="8" fill="#1f1a17" stroke="none" font-family="Lexend">from above:</text><text x="68" y="34" font-size="8" fill="#1f1a17" stroke="none" font-family="Lexend">a rectangle</text></svg></div>
+    </div>
+    <p class="tiny" style="margin:0">Maps are drawn from above, like a bird or a drone would see things. The top of a table is a rectangle; a round tree is a circle; a path is a wiggly line.</p>
+  </div>
+  <div class="box dash withref" id="mapfact" style="grid-template-columns: 1fr 56mm">
+    <div><h3>A Victorian map fact</h3>
+    <p style="margin:0">While Queen Victoria was on the throne, the Ordnance Survey mapped every county of Britain in enormous detail. Cheshire was surveyed between 1870 and 1875, so every field, church, canal and railway around Wrenbury was drawn on a map with a key to the symbols, just like yours. This one shows Chester.</p></div>
+    <figure class="ref" data-img="os-map.jpg" data-cap="A Victorian Ordnance Survey map of Chester" style="--h:32mm"></figure>
+  </div>
+  <div class="box" style="flex:1; min-height:0">
+    <h3>Practice patch</h3>
+    <p class="tiny" style="margin:0 0 2mm">Try drawing your bedroom from above here first. Where is the door? Where is the window? Where is your bed?</p>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 3 of 3</div></footer>
+</section>
+
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

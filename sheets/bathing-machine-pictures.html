@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Queen Victoria's bathing machine: pictures and parts</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  /* page 1: the pictures */
+  .hero { --h: 72mm; }
+  .grid2 figure.ref { --h: 48mm; }
+  .old { display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 3mm; align-items: stretch; }
+  .old figure.ref { --h: 22mm; }
+  .old .note { border: 0.4mm solid var(--line); border-radius: 2mm; padding: 2.5mm 3mm; font-size: 10pt; display: flex; flex-direction: column; justify-content: center; gap: 1.5mm; }
+  .old .note b { font-family: var(--serif); color: var(--ox); font-size: 11.5pt; }
+  .count { display: flex; gap: 4mm; align-items: center; font-size: 11pt; flex-wrap: wrap; }
+  .count b { font-family: var(--serif); color: var(--ox); font-size: 12pt; margin-right: 1mm; }
+  .count span { display: inline-flex; align-items: center; gap: 1.5mm; }
+  .count i { display: inline-block; width: 9mm; height: 8mm; border: 0.45mm solid var(--line); border-radius: 1.5mm; }
+  figure.ref figcaption { font-size: 7.6pt; }
+  figure.ref figcaption::first-line { color: var(--ink); }
+
+  /* page 2: the parts */
+  .top { display: grid; grid-template-columns: 118mm 1fr; gap: 4mm; align-items: stretch; }
+  .lab { position: relative; height: 99mm; overflow: hidden; border-radius: 2mm; border: 0.3mm solid var(--faint); }
+  /* the photograph cropped to the machine: it spans 10-80 % across and 7-85 % down the picture */
+  .lab img { position: absolute; width: calc(118mm / 0.70); height: calc(118mm / 0.70 * 0.75); left: calc(-0.10 * 118mm / 0.70); top: calc(-0.07 * 118mm / 0.70 * 0.75); }
+  .lab .n { position: absolute; transform: translate(-50%, -50%); width: 7.2mm; height: 7.2mm; border-radius: 50%; background: #fff; border: 0.55mm solid var(--ox); color: var(--ox);
+    display: grid; place-items: center; font-weight: 700; font-size: 10.5pt; box-shadow: 0 0 0 0.6mm rgba(255, 255, 255, 0.75); }
+  .lab small { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.85); font-size: 6.8pt; color: var(--grey); padding: 0.6mm 2mm; }
+  .side { display: grid; gap: 2.5mm; align-content: start; }
+  .side .box { padding: 2mm 3mm; font-size: 9.3pt; line-height: 1.3; }
+  .side .box h3 { font-size: 11.5pt; margin-bottom: 1mm; }
+  .side .box p { margin: 0 0 1.5mm; }
+  .side .box p:last-child { margin: 0; }
+  .parts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4mm 4mm; }
+  .part { display: grid; grid-template-columns: 7.5mm 1fr; gap: 2mm; align-items: start; font-size: 9.8pt; line-height: 1.28; }
+  .part i { font-style: normal; width: 7mm; height: 7mm; border-radius: 50%; border: 0.55mm solid var(--ox); color: var(--ox); display: grid; place-items: center; font-weight: 700; font-size: 10pt; }
+  .part b { display: block; font-family: var(--serif); font-size: 11.5pt; color: var(--ink); margin-bottom: 0.4mm; }
+  .src { font-size: 7.4pt; color: var(--grey); line-height: 1.35; margin: 0; }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../tasks/bathing-machine.html">← Design a bathing machine</a><small>2 pages, A4</small></div><a class="b ghost" href="../pdf/bathing-machine-pictures.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<!-- Page 1: pictures of the real one -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · pictures to look at</small>Queen Victoria's bathing machine</div></header>
+  <p class="lead" style="font-size:11.5pt">This is the bathing machine Queen Victoria used at Osborne, her house by the sea on the Isle of Wight. She first went into the sea from it on 30 July 1847. It is 12 feet long: as long as a small car.</p>
+  <div class="count"><b>Count them in the pictures:</b><span>wheels <i></i></span><span>white steps <i></i></span><span>curly iron brackets <i></i></span></div>
+  <figure class="ref hero" data-img="osborne-machine-side.jpg" data-cap="From the side: the green changing room, the cream veranda and the big black wheels." style="--pos: 50% 34%"></figure>
+  <div class="grid2" style="gap:3mm">
+    <figure class="ref" data-img="osborne-bathing-machine.jpg" data-cap="Look up: curly iron brackets hold up the roof over the steps." style="--pos: 45% 40%"></figure>
+    <figure class="ref" data-img="osborne-machine-front.jpg" data-cap="From the front: the veranda the Queen stepped out of." style="--pos: 50% 45%"></figure>
+    <figure class="ref" data-img="osborne-machine-corner.jpg" data-cap="The front corner. Can you see the curls of iron?" style="--pos: 60% 40%"></figure>
+    <figure class="ref" data-img="osborne-machine-2022.jpg" data-cap="On its long stone bed above Osborne beach." style="--pos: 60% 45%"></figure>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Pictures 1 of 2</div></footer>
+</section>
+
+<!-- Page 2: the parts and what they did -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · the parts</small>What each part did</div></header>
+  <div class="top">
+    <div class="lab">
+      <img src="../assets/img/osborne-bathing-machine.jpg" alt="Queen Victoria's bathing machine with its parts numbered">
+      <span class="n" style="left:44%; top:16%">1</span>
+      <span class="n" style="left:66%; top:27%">2</span>
+      <span class="n" style="left:31%; top:35%">3</span>
+      <span class="n" style="left:46%; top:47%">4</span>
+      <span class="n" style="left:40%; top:76%">5</span>
+      <span class="n" style="left:14%; top:41%">6</span>
+      <span class="n" style="left:6.5%; top:25.5%">7</span>
+      <span class="n" style="left:10%; top:66%">8</span>
+      <span class="n" style="left:17%; top:86%">9</span>
+      <small>Photo: grumpylumixuser, 2012, CC BY 3.0, via Wikimedia Commons</small>
+    </div>
+    <div class="side">
+      <div class="box"><h3>Not in the photo</h3>
+        <p><b>The winch.</b> No horse for the Queen. A man turned the handle of a winch, and its wire rope let the machine down the rails into the sea, then wound it back up.</p>
+        <p><b>The dipper.</b> A strong helper who waited in the water to help bathers in, and sometimes dunked them under.</p>
+      </div>
+      <div class="box"><h3>Did you know?</h3>
+        <p>Victoria wrote in her diary that her first dip was delightful, until she put her head under the water.</p>
+        <p>After she died, her bathing machine was used as a hen house! It has been mended, and it stands by the beach at Osborne.</p>
+      </div>
+    </div>
+  </div>
+  <div class="parts">
+    <div class="part"><i>1</i><div><b>Roof</b>It slopes down on all four sides, in overlapping rows, so the rain runs off.</div></div>
+    <div class="part"><i>2</i><div><b>Canopy</b>The roof reaches out over the steps, so the Queen kept dry going down them.</div></div>
+    <div class="part"><i>3</i><div><b>Iron brackets</b>Curly scrolls of iron, painted green, hold up the canopy.</div></div>
+    <div class="part"><i>4</i><div><b>Veranda</b>A little porch at the sea end. The Queen stepped out behind its curtains, so nobody on the beach could see her.</div></div>
+    <div class="part"><i>5</i><div><b>Steps</b>Five white steps lead down into the sea. At the bottom of the rails, the lowest ones were under the water.</div></div>
+    <div class="part"><i>6</i><div><b>Changing room</b>A little green room where the Queen changed into her bathing dress. Inside was a real toilet with pipes.</div></div>
+    <div class="part"><i>7</i><div><b>Window</b>A small window high up lets in the light. The door and window had silver handles.</div></div>
+    <div class="part"><i>8</i><div><b>Wheels</b>Four big wheels with flat iron tyres. Each one is about as tall as you are.</div></div>
+    <div class="part"><i>9</i><div><b>Stone rails</b>The wheels ran in grooves in stone rails, down a slipway into the sea. Pieces of the rails are still under it.</div></div>
+  </div>
+  <div class="old">
+    <figure class="ref" data-img="bathing-machines.jpg" data-cap="Ordinary bathing machines, Isle of Wight, 1889." style="--pos: 50% 55%"></figure>
+    <figure class="ref" data-img="bathing-horse.jpg" data-cap="A horse pulling a bathing machine, about 1900." style="--pos: 50% 55%"></figure>
+    <div class="note"><b>Spot the difference</b><span>Most bathing machines were pulled into the sea by a horse. The Queen's ran on stone rails and was let down by a winch. How many wheels has the horse's machine?</span></div>
+  </div>
+  <p class="src">Sources: English Heritage, "Five ways to have beach fun like Queen Victoria" (flat iron tyres, changing room, plumbed-in lavatory, curtained veranda, a winch and wire rope); Historic England Archive, IC076/002 (grooved stone rails, winch and cable, first swim 30 July 1847); Emsworth Museum, "Bathing belles and bathing machines" (12 feet long, silver handles, horses); The Victorian Web, "The Queen's bathing machine at Osborne" (her diary, segments of stone rails); History Hit (dippers); Wikipedia, "Bathing machine" (the hen house). Roof, canopy, brackets, window and wheel size are from the photographs.</p>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Pictures 2 of 2</div></footer>
+</section>
+
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

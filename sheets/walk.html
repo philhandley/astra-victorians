@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrenbury walk spotter: printable sheets</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  .defs { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .defs .box { padding: 2.5mm 3.5mm; }
+  .defs .box h3 { margin-bottom: .5mm; }
+  .defs p { margin: 0; font-size: 10.5pt; }
+  .spots { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; flex: 1; min-height: 0; }
+  .spots .col { display: grid; grid-template-rows: auto 1fr 1fr 1fr; gap: 3mm; }
+  .spots .col h3 { font-family: var(--serif); color: var(--ox); font-size: 14pt; margin: 0; text-align: center; }
+  .spots .s { border: 0.5mm solid var(--line); border-radius: 3mm; padding: 2.5mm 3mm; display: flex; flex-direction: column; position: relative; }
+  .spots .s .draw { flex: 1; }
+  .spots .s .nm { display: flex; gap: 2mm; align-items: baseline; font-size: 10.5pt; font-weight: 700; }
+  .spots .s .nm span { flex: 1; border-bottom: 0.35mm solid var(--ink); height: 6.5mm; }
+  .spots .s i { position: absolute; top: 2mm; right: 2.5mm; font-style: normal; font-family: var(--serif); font-weight: 900; color: #8f877b; font-size: 16pt; }
+  .tick2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; align-items: start; }
+  .tick2 .box ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.5mm; }
+  .tick2 .box li { display: flex; align-items: center; gap: 2mm; font-size: 9.8pt; line-height: 1.25; }
+  .tick2 .box li .chk { width: 4.8mm; height: 4.8mm; margin-right: 0; }
+  .tick2 .box li svg { width: 7mm; height: 7mm; flex: none; }
+  .tick2 .box li small { color: var(--grey); font-size: 8pt; }
+  .photos6 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 4mm; flex: 1; min-height: 0; }
+  .photos6 .photo { position: relative; }
+  .photos6 .photo span { position: absolute; left: 3mm; right: 3mm; bottom: 2mm; border-bottom: 0.3mm solid var(--ink); height: 7mm; }
+  .photos6 .photo b { position: absolute; left: 3mm; top: 2mm; font-size: 9pt; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../tasks/wrenbury-walk.html">← A walk around Wrenbury</a><small>3 pages, A4</small></div><a class="b ghost" href="../pdf/walk.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<!-- Page 1: six spotter boxes -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Wrenbury walk: spotter sheet</div><div class="pts">5<small>POINTS</small></div></header>
+  <div class="defs">
+    <div class="box"><h3>Human features</h3><p>Things that people made: houses, a church, a bridge, a road, a shop, a railway, a canal.</p></div>
+    <div class="box"><h3>Physical features</h3><p>Things that are natural: a river, a hill, fields, trees, a pond, the weather, the soil.</p></div>
+  </div>
+  <div class="spots">
+    <div class="col">
+      <h3>Human: made by people</h3>
+      <div class="s"><i>1</i><div class="draw"></div><div class="nm">It is a <span></span></div></div>
+      <div class="s"><i>2</i><div class="draw"></div><div class="nm">It is a <span></span></div></div>
+      <div class="s"><i>3</i><div class="draw"></div><div class="nm">It is a <span></span></div></div>
+    </div>
+    <div class="col">
+      <h3>Physical: natural</h3>
+      <div class="s"><i>1</i><div class="draw"></div><div class="nm">It is a <span></span></div></div>
+      <div class="s"><i>2</i><div class="draw"></div><div class="nm">It is a <span></span></div></div>
+      <div class="s"><i>3</i><div class="draw"></div><div class="nm">It is a <span></span></div></div>
+    </div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 1 of 3</div></footer>
+</section>
+
+<!-- Page 2: tick list (filled from research) -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Tick as you go</div><div class="pts">5<small>POINTS</small></div></header>
+  <p class="lead">Can you spot these around Wrenbury? Tick each one you see. Hold hands near the canal and the lift bridges.</p>
+  <div class="refrow">
+    <figure class="ref" data-img="wrenbury-bridge.jpg" data-cap="A lift bridge" style="--h:17mm"></figure>
+    <figure class="ref" data-img="wrenbury-dusty-miller.jpg" data-cap="The Dusty Miller and the road bridge" style="--h:17mm"></figure>
+    <figure class="ref" data-img="wrenbury-church.jpg" data-cap="St Margaret's tower" style="--h:17mm"></figure>
+    <figure class="ref" data-img="wrenbury-station.jpg" data-cap="The station, 1858" style="--h:17mm"></figure>
+  </div>
+  <div class="tick2">
+    <div class="box"><h3>Human features</h3><ul id="human"></ul><p class="tiny" style="margin:2.5mm 0 0">Something else I spotted:</p><div class="lines"><div class="ln"></div></div></div>
+    <div class="box"><h3>Physical features</h3><ul id="physical"></ul><p class="tiny" style="margin:2.5mm 0 0">Something else I spotted:</p><div class="lines"><div class="ln"></div></div></div>
+  </div>
+  <div class="box dash"><h3>Which human feature is the oldest? Which is the newest?</h3><div class="lines"><div class="ln"></div></div></div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 2 of 3</div></footer>
+</section>
+
+<!-- Page 3: photo page -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>My Wrenbury photos</div><div class="pts">5<small>POINTS</small></div></header>
+  <p class="lead">Stick a photo in each box and write what it is. Three human, three physical.</p>
+  <div class="photos6">
+    <div class="photo"><b>HUMAN</b>photo<span></span></div><div class="photo"><b>PHYSICAL</b>photo<span></span></div>
+    <div class="photo"><b>HUMAN</b>photo<span></span></div><div class="photo"><b>PHYSICAL</b>photo<span></span></div>
+    <div class="photo"><b>HUMAN</b>photo<span></span></div><div class="photo"><b>PHYSICAL</b>photo<span></span></div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Sheet 3 of 3</div></footer>
+</section>
+
+<script type="module">
+import { HUMAN, PHYSICAL, ICONS } from '../js/wrenbury.js';
+const row = f => `<li><span class="chk"></span>${ICONS[f.icon] || ''}<span>${f.name} ${f.note ? `<small>${f.note}</small>` : ''}</span></li>`;
+document.getElementById('human').innerHTML = HUMAN.map(row).join('');
+document.getElementById('physical').innerHTML = PHYSICAL.map(row).join('');
+</script>
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

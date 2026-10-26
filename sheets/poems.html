@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy a Victorian poem: handwriting sheets</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  .poem { background: var(--cream); border-radius: 4mm; padding: 4mm 6mm 3.5mm; }
+  .poem h2 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 21pt; color: var(--ink); margin: 0; line-height: 1.1; }
+  .poem .by { font-size: 10pt; color: var(--grey); margin: 0 0 2.5mm; }
+  .poem .by b { color: var(--ink); }
+  .poem .l { font-size: 15pt; line-height: 1.55; }
+  .poem .l.in { padding-left: 8mm; }
+  .flourish { font-family: 'Pinyon Script', cursive; font-size: 22pt; color: var(--grey); text-align: center; line-height: 1; margin: -1mm 0 0; }
+  .hw.copy .ln::after { content: ''; }
+  .tips { font-size: 9.5pt; color: var(--grey); display: flex; gap: 5mm; justify-content: space-between; }
+  .tips b { color: var(--ink); }
+  .warm .row { display: grid; gap: 1mm; }
+  .warm .ln.trace { color: #8f877b; letter-spacing: .06em; }
+  .warm .ln.trace.cur { font-family: 'Pinyon Script', cursive; font-size: 30pt; letter-spacing: .02em; }
+  .warm h3 { margin: 1.2mm 0 0.4mm; font-size: 11pt; font-weight: 600; }
+  .sizes { display: flex; gap: 6mm; align-items: flex-end; font-size: 10pt; }
+  .sizes .ex { font-family: var(--hand); font-size: 26pt; line-height: 1; border-bottom: 0.35mm solid var(--ink); position: relative; padding: 0 2mm; }
+  .sizes .ex::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 0.25mm dashed var(--faint); }
+</style>
+</head>
+<body data-groups="warmup owl beard wind pink swing bed rain boats crocodile star lamb">
+<div class="toolbar"><div class="t"><a href="../tasks/poem.html">← Copy a Victorian poem</a><small>2 pages per poem, A4</small></div>
+  <select data-pick aria-label="Choose a poem"><option value="">All poems (23 pages)</option></select>
+  <a class="b ghost" id="pdflink" href="../pdf/poems.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<!-- warm-up page -->
+<section class="page warm" data-group="warmup">
+  <header class="ph"><div class="t"><small>Astra Victorians · homework</small>Handwriting warm-up: pothooks and hangers</div><div class="pts">5<small>POINTS</small></div></header>
+  <p class="lead">Beginners once practised "pothooks and hangers", the curly strokes that letters are made of, before they wrote real words. Trace the grey shapes, then carry on by yourself.</p>
+  <h3>Pothooks</h3>
+  <div class="hw row"><div class="ln trace">c c c c c c c c c c c c c</div><div class="ln"></div></div>
+  <h3>Hangers</h3>
+  <div class="hw row"><div class="ln trace">l l l l l l l l l l l l l l l l l</div><div class="ln"></div></div>
+  <h3>Waves and loops</h3>
+  <div class="hw row"><div class="ln trace">u u u u u u u u  n n n n n n n n</div><div class="ln trace">o o o o o o o o  a a a a a a a a</div><div class="ln"></div></div>
+  <h3>Victorian copperplate letters, to look at and try</h3>
+  <div class="hw row"><div class="ln trace cur">a b c d e f g h i j k l m</div><div class="ln trace cur">n o p q r s t u v w x y z</div><div class="ln"></div></div>
+  <div class="box" style="margin-top:1mm">
+    <h3 style="margin:0 0 1mm">Letter sizes</h3>
+    <div class="sizes">
+      <div class="ex">a c e m n o</div><div>small letters sit between the bottom line and the middle line</div>
+      <div class="ex">b d h k l t</div><div>tall letters reach the top</div>
+      <div class="ex">g j p q y</div><div>letters with tails hang below</div>
+    </div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Warm-up</div></footer>
+</section>
+
+<div id="poems"></div>
+
+<script type="module">
+import { POEMS } from '../js/poems.js';
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const sel = document.querySelector('select[data-pick]');
+POEMS.forEach(p => sel.insertAdjacentHTML('beforeend', `<option value="${p.id}">${esc(p.title)}</option>`));
+const q = new URLSearchParams(location.search);
+if (q.get('only') && q.get('only') !== 'warmup') document.getElementById('pdflink').href = `../pdf/poems-${q.get('only')}.pdf`;
+
+function head(p) {
+  return `<header class="ph"><div class="t"><small>Astra Victorians · homework · ${p.victorian ? 'a Victorian poem' : 'a poem Victorians loved'}</small>${esc(p.title)}</div><div class="pts">5<small>POINTS</small></div></header>`;
+}
+function poemBox(p) {
+  return `<div class="poem"><h2>${esc(p.title)}</h2><p class="by">by <b>${esc(p.author)}</b>, ${p.year}, from <i>${esc(p.book)}</i>. ${esc(p.note)}</p>${p.lines.map((l, i) => `<div class="l ${i % 2 ? 'in' : ''}">${esc(l)}</div>`).join('')}</div>`;
+}
+let html = '';
+for (const p of POEMS) {
+  const n = p.lines.length;
+  const rows = Math.max(n, Math.floor((182 - 8.2 * n) / 12));
+  // page A: copy it
+  html += `<section class="page" data-group="${p.id}">${head(p)}${poemBox(p)}<div class="flourish">~ copy it as neatly as you can ~</div><div class="hw copy">${'<div class="ln"></div>'.repeat(rows)}</div>
+    <div class="tips"><span><b>Tip:</b> one line at a time, finger spaces between words.</span><span><b>Tall letters</b> touch the top, <b>tails</b> hang down.</span></div>
+    <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Copy</div></footer></section>`;
+  // page B: trace it, then write it
+  html += `<section class="page" data-group="${p.id}">${head(p)}<p class="lead">First trace the grey words. Then write the same line underneath by yourself.</p><div class="hw narrow">${p.lines.map(l => `<div class="ln trace">${esc(l)}</div><div class="ln"></div>`).join('')}</div>
+    <div class="box dash grow" style="margin-top:3mm"><h3 style="margin:0">Draw a picture for the poem</h3></div>
+    <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Trace and write</div></footer></section>`;
+}
+document.getElementById('poems').innerHTML = html;
+</script>
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

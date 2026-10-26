@@ -1,0 +1,103 @@
+/* Printable A4 sheets, in the same family as the 3D look-inside pages: Instrument Serif titles, Lexend text,
+   dark ink, one warm orange accent, soft rounded panels on white. Each .page is exactly one A4 side; the toolbar
+   is screen only. Andika is kept for handwriting practice, where its school-style letters (a, g) matter. */
+@page { size: A4; margin: 0; }
+@page land { size: A4 landscape; margin: 0; }
+:root {
+  --ink: #1f1d1a; --ink2: #4d463e; --grey: #6b635a; --faint: #e6dfd3; --line: #c9bfae;
+  --ox: #ad4119;                     /* the accent (once claret; the name is kept so older pages still work) */
+  --accent: #ad4119; --gold: #f2b631; --teal: #2f8f8a; --cream: #f7f2ea; --sand: #fbf0dd;
+  --sans: 'Lexend', 'Segoe UI', system-ui, sans-serif; --serif: 'Instrument Serif', Georgia, serif; --hand: 'Andika', 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--sans); color: var(--ink); font-size: 10.5pt; line-height: 1.38; font-synthesis: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+b, strong { font-weight: 600; }
+.page { width: 210mm; height: 297mm; padding: 11mm 13mm 10mm; position: relative; overflow: hidden; background: #fff; break-after: page; page-break-after: always; display: flex; flex-direction: column; gap: 4mm; }
+.page.land { width: 297mm; height: 210mm; page: land; }
+.page:last-of-type { break-after: auto; page-break-after: auto; }
+@media screen {
+  body { background: #efe9df; padding: 84px 16px 40px; }
+  .page { margin: 0 auto 28px; border-radius: 3px; box-shadow: 0 10px 34px rgba(60, 46, 28, .14), 0 1px 3px rgba(60, 46, 28, .08); }
+}
+/* on a big screen, show the pages larger so they are easy to read (printing is unchanged) */
+@media screen and (min-width: 1150px) { body:not(.preview) .page { zoom: 1.2; } }
+@media screen and (min-width: 1500px) { body:not(.preview) .page { zoom: 1.4; } }
+@media print { body { background: #fff; padding: 0; } .page { margin: 0; box-shadow: none; border-radius: 0; } .toolbar { display: none !important; } }
+
+/* header on every page: a small eyebrow, a big serif title, the points as a badge */
+.ph { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 0.3mm solid var(--faint); padding-bottom: 2.4mm; gap: 6mm; }
+.ph .t { font-family: var(--serif); font-weight: 400; font-style: italic; font-size: 23pt; color: var(--ink); line-height: 1.0; letter-spacing: -0.005em; }
+.ph .t small { display: block; font-family: var(--sans); font-style: normal; font-weight: 600; font-size: 7.6pt; color: var(--grey); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 1.2mm; }
+.ph .pts { flex: none; display: flex; align-items: baseline; gap: 1.2mm; padding: 1.6mm 3.6mm; border-radius: 999px; background: var(--sand); color: var(--ink); font-family: var(--sans); font-weight: 700; font-size: 12pt; line-height: 1; white-space: nowrap; }
+.ph .pts small { font-size: 7pt; font-weight: 600; letter-spacing: .08em; color: #7d5418; }
+.pf { margin-top: auto; display: flex; justify-content: space-between; gap: 8mm; border-top: 0.3mm solid var(--faint); padding-top: 2.2mm; font-size: 8.5pt; color: var(--grey); }
+.pf .nm { display: flex; gap: 3mm; flex: 1; }
+.pf .nm span { border-bottom: 0.3mm solid var(--line); flex: 1; min-height: 5mm; color: var(--ink); font-size: 11pt; }
+.pf .nm span.sh { flex: 0 0 34mm; }
+
+/* text blocks */
+.lead { font-size: 11.5pt; line-height: 1.45; margin: 0; color: var(--ink); }
+.tiny { font-size: 8.5pt; color: var(--grey); line-height: 1.4; }
+.box { border: 0; background: var(--cream); border-radius: 4mm; padding: 3mm 4mm; }
+.box.dash { background: none; border: 0.4mm dashed var(--line); }
+.box h3, .h3 { font-family: var(--sans); font-weight: 600; font-size: 12pt; margin: 0 0 1.5mm; color: var(--ink); }
+.box h3::before, .h3::before { content: ''; display: inline-block; width: 2.2mm; height: 2.2mm; border-radius: 50%; background: var(--accent); margin-right: 2mm; vertical-align: 0.35mm; }
+.frame { border: 0.45mm solid var(--line); border-radius: 4mm; position: relative; }
+.frame .cap { position: absolute; left: 3.5mm; top: -2.6mm; background: #fff; padding: 0 2mm; font-size: 8pt; font-weight: 600; color: var(--grey); letter-spacing: .1em; text-transform: uppercase; }
+.grow { flex: 1; min-height: 0; }
+
+/* handwriting lines: 12 mm rows with a faint dashed midline (Andika, the school-style letters) */
+.hw { --row: 12mm; }
+.hw .ln { height: var(--row); position: relative; border-bottom: 0.35mm solid var(--ink2); }
+.hw .ln::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 0.25mm dashed var(--line); }
+.hw .ln.trace { font-family: var(--hand); font-size: 26pt; line-height: var(--row); color: #cbc3b8; padding-left: 2mm; white-space: nowrap; letter-spacing: .02em; }
+.hw.narrow { --row: 10mm; }
+.hw.narrow .ln.trace { font-size: 21pt; }
+.lines .ln { height: 9mm; border-bottom: 0.3mm solid var(--line); }
+.lines.wide .ln { height: 11mm; }
+
+/* grids and tables */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+table.t { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 10.5pt; border: 0.35mm solid var(--line); border-radius: 3mm; overflow: hidden; }
+table.t th, table.t td { border-right: 0.35mm solid var(--line); border-bottom: 0.35mm solid var(--line); padding: 2mm 2.5mm; vertical-align: top; text-align: left; }
+table.t tr > :last-child { border-right: 0; }
+table.t tr:last-child > * { border-bottom: 0; }
+table.t th { background: var(--cream); font-family: var(--sans); font-weight: 600; font-size: 10.5pt; color: var(--ink); }
+table.t td.w { height: 13mm; }
+.chk { display: inline-block; width: 5.6mm; height: 5.6mm; border: 0.4mm solid var(--ink2); border-radius: 1.4mm; vertical-align: middle; margin-right: 2.5mm; flex: none; background: #fff; }
+.list { list-style: none; padding: 0; margin: 0; display: grid; gap: 2.2mm; }
+.list li { display: flex; align-items: center; gap: 1mm; font-size: 10.5pt; }
+.wordbank { display: flex; flex-wrap: wrap; gap: 2mm 2.5mm; }
+.wordbank span { background: var(--cream); border-radius: 999px; padding: 1.2mm 3.6mm; font-size: 10.5pt; font-weight: 600; }
+.num { counter-reset: n; list-style: none; padding: 0; margin: 0; display: grid; gap: 2.6mm; }
+.num li { counter-increment: n; display: grid; grid-template-columns: 8.5mm 1fr; gap: 2.5mm; align-items: start; }
+.num li::before { content: counter(n); width: 7.4mm; height: 7.4mm; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 10pt; }
+.ico { width: 10mm; height: 10mm; flex: none; }
+.ico svg { width: 100%; height: 100%; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+.pill { display: inline-block; background: var(--cream); border-radius: 999px; padding: .6mm 3mm; font-weight: 600; font-size: 9.5pt; }
+.photo { border: 0.4mm dashed var(--line); border-radius: 4mm; display: grid; place-items: center; color: var(--grey); font-size: 9.5pt; text-align: center; background: #fdfbf8; }
+svg.line { stroke: var(--ink); fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* screen toolbar, like the 3D pages' */
+.toolbar { position: fixed; top: 0; left: 0; right: 0; z-index: 10; background: rgba(255, 253, 249, .92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #e3dccf; display: flex; align-items: center; gap: 10px; padding: 10px 18px; font-family: var(--sans); font-size: 15px; flex-wrap: wrap; }
+.toolbar .t { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--ink); font-size: 22px; margin-right: auto; }
+.toolbar .t a { color: inherit; text-decoration: none; }
+.toolbar .t small { color: var(--grey); font-family: var(--sans); font-style: normal; font-weight: 400; font-size: 13px; margin-left: 10px; }
+.toolbar button, .toolbar a.b { border: 0; background: var(--ink); color: #fff; padding: 9px 18px; border-radius: 999px; font: 600 14px var(--sans); cursor: pointer; text-decoration: none; box-shadow: 0 3px 0 #000; }
+.toolbar a.b.ghost, .toolbar button.ghost { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1.5px #d9d0c2; }
+.toolbar select { font: 600 14px var(--sans); padding: 8px 10px; border-radius: 12px; border: 1.5px solid #d9d0c2; background: #fff; }
+
+/* ?preview: a bare first page for thumbnails */
+body.preview { padding: 0; background: #fff; }
+body.preview .toolbar { display: none; }
+body.preview .page { margin: 0; box-shadow: none; border-radius: 0; }
+
+/* reference pictures on the sheets, so the child can see the real thing */
+figure.ref { margin: 0; border: 0; border-radius: 3.5mm; padding: 1.6mm; background: var(--cream); break-inside: avoid; display: flex; flex-direction: column; }
+figure.ref img { width: 100%; height: var(--h, auto); display: block; border-radius: 2.4mm; object-fit: cover; object-position: var(--pos, center); }
+figure.ref figcaption { font-size: 6.8pt; color: var(--grey); margin: 1.2mm 0.6mm 0.2mm; line-height: 1.25; }
+.refrow { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3mm; }
+.withref { display: grid; gap: 4mm; align-items: start; }

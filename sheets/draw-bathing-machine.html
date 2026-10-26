@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draw Queen Victoria's bathing machine: plan and side view</title>
+<link rel="icon" href="../assets/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Instrument+Serif:ital@0;1&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../css/sheet.css">
+<style>
+  .dwg { display: block; }
+  .dwg text { font-family: Lexend, sans-serif; }
+  .pair { display: grid; gap: 2mm; }
+  .cap2 { display: flex; justify-content: space-between; align-items: baseline; font-size: 10pt; }
+  .cap2 b { font-family: var(--serif); color: var(--ox); font-size: 12.5pt; }
+  .cap2 span { color: var(--grey); font-size: 9pt; }
+  .keyrow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5mm 4mm; font-size: 9.6pt; }
+  .keyrow div { display: flex; gap: 1.5mm; align-items: center; }
+  .keyrow i { font-style: normal; width: 5.5mm; height: 5.5mm; border-radius: 50%; border: 0.35mm solid var(--ink); display: grid; place-items: center; font-weight: 700; font-size: 8.5pt; flex: none; }
+  .top2 { display: grid; grid-template-columns: 1fr 52mm; gap: 4mm; align-items: start; }
+</style>
+</head>
+<body>
+<div class="toolbar"><div class="t"><a href="../tasks/bathing-machine.html">← Design a bathing machine</a><small>2 pages, A4</small></div><a class="b ghost" href="../pdf/draw-bathing-machine.pdf" download>Download PDF</a><button data-print>Print</button></div>
+
+<!-- Page 1: the side view (elevation) -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · draw it like an architect</small>Queen Victoria's bathing machine: side view</div><div class="pts">10<small>POINTS</small></div></header>
+  <div class="top2">
+    <div><p class="lead" style="font-size:11pt; margin-bottom:2mm">An <b>elevation</b> is a building drawn flat from the side. This is the real machine at Osborne, to scale. Copy it into the empty grid square by square: find the letter and the number, then draw what is in that square.</p>
+    <div class="keyrow" id="elevKey" style="grid-template-columns: repeat(2, 1fr)"></div></div>
+    <figure class="ref" data-img="osborne-bathing-machine.jpg" data-cap="The real one at Osborne today" style="--h:30mm"></figure>
+  </div>
+  <div class="pair">
+    <div class="cap2"><b>The real one</b><span>scale 1 to 60 · 1 square = 25 cm</span></div>
+    <div id="elev"></div>
+    <div class="cap2"><b>My copy</b><span>start with the wheels, then the box, then the roof</span></div>
+    <div id="elevBlank"></div>
+  </div>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Drawing 1 of 2</div></footer>
+</section>
+
+<!-- Page 2: the plan -->
+<section class="page">
+  <header class="ph"><div class="t"><small>Astra Victorians · draw it like an architect</small>Queen Victoria's bathing machine: plan</div><div class="pts">10<small>POINTS</small></div></header>
+  <p class="lead" style="font-size:11pt">A <b>plan</b> is the view from above, as if the roof had been lifted off. Thick lines are walls. Copy it into the empty grid square by square, then colour the changing room, the veranda and the steps.</p>
+  <div class="pair">
+    <div class="cap2"><b>The real one</b><span>scale 1 to 35 · 1 square = 20 cm · 12 feet long and 7 feet wide</span></div>
+    <div id="plan"></div>
+    <div class="cap2"><b>My copy</b><span>start with the walls</span></div>
+    <div id="planBlank"></div>
+  </div>
+  <div class="keyrow" id="planKey"></div>
+  <p class="tiny" style="margin:0">The length and width, 12 feet by 7 feet, are the real ones (Emsworth Museum). Heights, wheels and steps are measured by eye from photographs, so they are close but not exact.</p>
+  <footer class="pf"><div class="nm">Name <span></span> Date <span class="sh"></span></div><div>Drawing 2 of 2</div></footer>
+</section>
+
+<script type="module">
+// Queen Victoria's bathing machine, in metres. Length and width are the real 12 ft x 7 ft (3.66 x 2.13 m);
+// the rest is measured by eye from the photograph assets/img/osborne-bathing-machine.jpg.
+const D = {
+  back: -1.83, front: 0.67, ver: 1.83, hw: 1.065,           // body from back to the veranda, veranda front, half width
+  floor: 1.0, eaves: 3.1, apex: 3.95, over: 0.2,             // floor, eaves, roof top, roof overhang
+  wheelR: 0.72, axles: [-1.25, 1.2], wheelZ: 1.17,
+  steps: 5, go: 0.22,
+}
+const INK = '#1f1a17', GRID = '#d8d1c4', GRID2 = '#b9b0a2'
+const LET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+// a grid box: x0..x1, y0..y1 in metres (y up), scale in mm per metre, 0.2 m squares, letters across and numbers down
+function gridBox(x0, x1, y0, y1, k, inner, sq = 0.2) {
+  const W = (x1 - x0) * k, H = (y1 - y0) * k, m = 6
+  const nx = Math.round((x1 - x0) / sq), ny = Math.round((y1 - y0) / sq)
+  let g = ''
+  for (let i = 0; i <= nx; i++) g += `<line x1="${m + i * sq * k}" y1="${m}" x2="${m + i * sq * k}" y2="${m + H}" stroke="${i % 5 ? GRID : GRID2}" stroke-width="${i % 5 ? 0.18 : 0.3}"/>`
+  for (let j = 0; j <= ny; j++) g += `<line x1="${m}" y1="${m + j * sq * k}" x2="${m + W}" y2="${m + j * sq * k}" stroke="${j % 5 ? GRID : GRID2}" stroke-width="${j % 5 ? 0.18 : 0.3}"/>`
+  for (let i = 0; i < nx; i++) g += `<text x="${m + (i + 0.5) * sq * k}" y="${m - 1.6}" font-size="2.6" text-anchor="middle" fill="#6b635a">${LET[i % 26]}</text>`
+  for (let j = 0; j < ny; j++) g += `<text x="${m - 1.5}" y="${m + (j + 0.5) * sq * k + 0.9}" font-size="2.6" text-anchor="end" fill="#6b635a">${j + 1}</text>`
+  const X = (x) => m + (x - x0) * k, Y = (y) => m + (y1 - y) * k
+  return `<svg class="dwg" viewBox="0 0 ${W + m + 2} ${H + m + 2}" width="${W + m + 2}mm" height="${H + m + 2}mm">${g}<g>${inner ? inner(X, Y, k) : ''}</g></svg>`
+}
+const num = (X, Y, x, y, n) => `<circle cx="${X(x)}" cy="${Y(y)}" r="2.3" fill="#fff" stroke="${INK}" stroke-width="0.3"/><text x="${X(x)}" y="${Y(y) + 1}" font-size="2.8" font-weight="700" text-anchor="middle" fill="${INK}">${n}</text>`
+
+// ------------------------------------------------------------ elevation (looking at the long side)
+const EX0 = -2.2, EX1 = 3.3, EY0 = -0.25, EY1 = 4.25, EK = 1000 / 60, ESQ = 0.25
+function elevation(X, Y, k) {
+  const L = (x1, y1, x2, y2, w = 0.45, c = INK) => `<line x1="${X(x1)}" y1="${Y(y1)}" x2="${X(x2)}" y2="${Y(y2)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`
+  const R = (x1, y1, x2, y2, fill = 'none', w = 0.5) => `<rect x="${X(x1)}" y="${Y(y2)}" width="${(x2 - x1) * k}" height="${(y2 - y1) * k}" fill="${fill}" stroke="${INK}" stroke-width="${w}"/>`
+  let s = ''
+  s += L(EX0 + 0.05, 0, EX1 - 0.05, 0, 0.6)                                       // the ground
+  s += R(D.back - 0.07, D.floor - 0.22, D.ver + 0.02, D.floor - 0.08, '#e9e4da')    // chassis beam
+  // body, clapboards
+  s += R(D.back, D.floor, D.front, D.eaves, '#dfe9e3', 0.6)
+  for (let y = D.floor + 0.15; y < D.eaves - 0.02; y += 0.15) s += L(D.back, y, D.front, y, 0.15, '#7a9a8a')
+  s += R(-1.5, 2.48, -1.05, 2.78, '#fff', 0.4)                                    // little window
+  // veranda side panel with vertical boards
+  s += R(D.front, D.floor, D.ver, D.eaves, '#fbf8ef', 0.6)
+  for (let x = D.front + 0.12; x < D.ver - 0.02; x += 0.12) s += L(x, D.floor, x, D.eaves, 0.13, '#c9bfa7')
+  // roof (hip seen from the side), skylight
+  s += `<polygon points="${X(D.back - D.over)},${Y(D.eaves)} ${X(D.ver + D.over)},${Y(D.eaves)} ${X((D.back + D.ver) / 2 + 0.1)},${Y(D.apex)} ${X((D.back + D.ver) / 2 - 0.1)},${Y(D.apex)}" fill="#cfded6" stroke="${INK}" stroke-width="0.6" stroke-linejoin="round"/>`
+  for (let i = 1; i < 6; i++) { const y = D.eaves + (D.apex - D.eaves) * i / 6, f = i / 6; s += L(D.back - D.over + (2.03 + 0.1) * f * 0.98, y, D.ver + D.over - (1.85 + 0.1) * f * 0.98, y, 0.13, '#7a9a8a') }
+  s += R(-0.85, 3.42, -0.35, 3.72, '#fff', 0.4)
+  // iron scroll brackets under the veranda roof
+  for (const [cx, r] of [[D.ver - 0.2, 0.16], [D.ver - 0.55, 0.12]]) s += `<path d="M${X(cx + r)} ${Y(D.eaves - 0.05)} a ${r * k} ${r * k} 0 1 1 ${-r * k} ${r * k}" fill="none" stroke="${INK}" stroke-width="0.35"/>`
+  // wheels with 12 spokes
+  for (const ax of D.axles) {
+    const cx = X(ax), cy = Y(D.wheelR), r = D.wheelR * k
+    s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${INK}" stroke-width="1.1"/><circle cx="${cx}" cy="${cy}" r="${r * 0.86}" fill="none" stroke="${INK}" stroke-width="0.3"/><circle cx="${cx}" cy="${cy}" r="${r * 0.15}" fill="#fff" stroke="${INK}" stroke-width="0.4"/>`
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; s += `<line x1="${cx + Math.cos(a) * r * 0.15}" y1="${cy + Math.sin(a) * r * 0.15}" x2="${cx + Math.cos(a) * r * 0.86}" y2="${cy + Math.sin(a) * r * 0.86}" stroke="${INK}" stroke-width="0.35"/>` }
+  }
+  // steps with a handrail
+  let st = `M${X(D.ver)} ${Y(D.floor)}`
+  for (let i = 1; i <= D.steps; i++) st += ` L${X(D.ver + D.go * (i - 1))} ${Y(D.floor - i * 0.2)} L${X(D.ver + D.go * i)} ${Y(D.floor - i * 0.2)}`
+  s += `<path d="${st}" fill="none" stroke="${INK}" stroke-width="0.5"/>`
+  s += L(D.ver, D.floor + 0.85, D.ver + D.go * D.steps, 0.85, 0.5) + L(D.ver + D.go * D.steps, 0, D.ver + D.go * D.steps, 0.85, 0.4)
+  for (let i = 0; i < D.steps; i++) s += L(D.ver + D.go * i + 0.1, D.floor - i * 0.2, D.ver + D.go * i + 0.1, D.floor - i * 0.2 + 0.85, 0.2)
+  // dimensions: length (12 feet) and floor height
+  s += L(D.back, -0.12, D.ver, -0.12, 0.25) + L(D.back, -0.17, D.back, -0.05, 0.25) + L(D.ver, -0.17, D.ver, -0.05, 0.25)
+  s += `<text x="${X((D.back + D.ver) / 2)}" y="${Y(-0.12) + 3.2}" font-size="2.8" text-anchor="middle" fill="${INK}">12 feet (3.66 m)</text>`
+  s += num(X, Y, -0.6, 1.9, 1) + num(X, Y, 1.25, 2.1, 2) + num(X, Y, -0.3, 3.4, 3) + num(X, Y, 2.55, 0.55, 4) + num(X, Y, -1.25, 1.55, 5) + num(X, Y, -1.28, 2.95, 6) + num(X, Y, 1.55, 3.25, 7)
+  return s
+}
+document.getElementById('elev').innerHTML = gridBox(EX0, EX1, EY0, EY1, EK, elevation, ESQ)
+document.getElementById('elevBlank').innerHTML = gridBox(EX0, EX1, EY0, EY1, EK, (X, Y) => `<line x1="${X(EX0 + 0.05)}" y1="${Y(0)}" x2="${X(EX1 - 0.05)}" y2="${Y(0)}" stroke="${INK}" stroke-width="0.6"/>`, ESQ)
+document.getElementById('elevKey').innerHTML = [['1', 'changing room'], ['2', 'veranda'], ['3', 'roof and skylight'], ['4', 'steps to the sea'], ['5', 'big wheel'], ['6', 'little window'], ['7', 'iron curls']].map(([n, t]) => `<div><i>${n}</i>${t}</div>`).join('')
+
+// ------------------------------------------------------------ plan (from above, roof lifted off)
+const PX0 = -2.2, PX1 = 3.2, PZ0 = -1.4, PZ1 = 1.4, PK = 1000 / 35
+function plan(X, Y, k) {
+  const T = 0.1  // walls drawn 10 cm thick so they read
+  const wall = (x1, z1, x2, z2, fill = INK) => `<rect x="${X(Math.min(x1, x2))}" y="${Y(Math.max(z1, z2))}" width="${Math.abs(x2 - x1) * k}" height="${Math.abs(z2 - z1) * k}" fill="${fill}"/>`
+  const L = (x1, z1, x2, z2, w = 0.35, dash = '') => `<line x1="${X(x1)}" y1="${Y(z1)}" x2="${X(x2)}" y2="${Y(z2)}" stroke="${INK}" stroke-width="${w}" ${dash ? `stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`
+  let s = ''
+  // roof outline above (dashed)
+  s += `<rect x="${X(D.back - D.over)}" y="${Y(D.hw + 0.15)}" width="${(D.ver - D.back + 2 * D.over) * k}" height="${(2 * D.hw + 0.3) * k}" fill="none" stroke="${INK}" stroke-width="0.25" stroke-dasharray="1.2 1"/>`
+  // floors: changing room and veranda, lightly tinted
+  s += `<rect x="${X(D.back)}" y="${Y(D.hw)}" width="${(D.front - D.back) * k}" height="${2 * D.hw * k}" fill="#e3ece6"/>`
+  s += `<rect x="${X(D.front)}" y="${Y(D.hw)}" width="${(D.ver - D.front) * k}" height="${2 * D.hw * k}" fill="#fbf6e6"/>`
+  // walls: back, sides, the front wall with the door gap, veranda sides
+  s += wall(D.back, -D.hw, D.back + T, D.hw)
+  s += wall(D.back, D.hw - T, D.front, D.hw) + wall(D.back, -D.hw, D.front, -D.hw + T)
+  s += wall(D.front - T, 0.4, D.front, D.hw) + wall(D.front - T, -D.hw, D.front - T + T, -0.4)
+  s += wall(D.front, D.hw - T, D.ver, D.hw, '#6f6a62') + wall(D.front, -D.hw, D.ver, -D.hw + T, '#6f6a62')
+  // the door swing
+  s += `<path d="M${X(D.front - T / 2)} ${Y(-0.4)} A ${0.8 * k} ${0.8 * k} 0 0 1 ${X(D.front - T / 2 - 0.8)} ${Y(0.4)}" fill="none" stroke="${INK}" stroke-width="0.25" stroke-dasharray="0.8 0.6"/>` + L(D.front - T / 2, 0.4, D.front - T / 2 - 0.8, 0.4, 0.3)
+  // curtains across the veranda front (wavy)
+  let cw = `M${X(D.ver - 0.05)} ${Y(D.hw - T)}`
+  for (let z = D.hw - T; z > -D.hw + T; z -= 0.12) cw += ` q ${0.05 * k} ${0.06 * k} 0 ${0.12 * k}`
+  s += `<path d="${cw}" fill="none" stroke="${INK}" stroke-width="0.35"/>`
+  // steps with an arrow going down
+  for (let i = 0; i <= D.steps; i++) s += L(D.ver + D.go * i, -0.47, D.ver + D.go * i, 0.47, 0.3)
+  s += L(D.ver, -0.47, D.ver + D.go * D.steps, -0.47, 0.4) + L(D.ver, 0.47, D.ver + D.go * D.steps, 0.47, 0.4)
+  s += L(D.ver + 0.1, 0, D.ver + D.go * D.steps - 0.12, 0, 0.35) + `<path d="M${X(D.ver + D.go * D.steps - 0.06)} ${Y(0)} l ${-1.6} ${-1.1} l 0 2.2 z" fill="${INK}"/>`
+  s += `<text x="${X(D.ver + D.go * 2.5)}" y="${Y(-0.62)}" font-size="2.5" text-anchor="middle" fill="${INK}">down</text>`
+  // wheels (seen from above), axles dashed under the floor
+  for (const ax of D.axles) for (const sz of [-1, 1]) s += `<rect x="${X(ax - D.wheelR)}" y="${Y(sz * D.wheelZ + 0.045)}" width="${2 * D.wheelR * k}" height="${0.09 * k}" fill="#3a3632"/>`
+  for (const ax of D.axles) s += L(ax, -D.wheelZ, ax, D.wheelZ, 0.25, '1 0.8')
+  // inside: the bench along the back wall, the loo in the corner, the coat hooks
+  s += `<rect x="${X(D.back + T)}" y="${Y(0.85)}" width="${0.42 * k}" height="${1.7 * k}" fill="#fff" stroke="${INK}" stroke-width="0.3"/>`
+  s += `<rect x="${X(-0.9)}" y="${Y(-D.hw + T + 0.62)}" width="${0.6 * k}" height="${0.62 * k}" fill="#fff" stroke="${INK}" stroke-width="0.3"/><circle cx="${X(-0.6)}" cy="${Y(-D.hw + T + 0.31)}" r="${0.17 * k}" fill="none" stroke="${INK}" stroke-width="0.3"/>`
+  for (let i = 0; i < 4; i++) s += `<circle cx="${X(D.back + 0.6 + i * 0.35)}" cy="${Y(D.hw - T - 0.06)}" r="0.6" fill="${INK}"/>`
+  // dimensions: 12 feet long, 7 feet wide
+  s += L(D.back, -D.hw - 0.22, D.ver, -D.hw - 0.22, 0.25) + L(D.back, -D.hw - 0.28, D.back, -D.hw - 0.16, 0.25) + L(D.ver, -D.hw - 0.28, D.ver, -D.hw - 0.16, 0.25)
+  s += `<text x="${X((D.back + D.ver) / 2)}" y="${Y(-D.hw - 0.22) + 3.2}" font-size="2.8" text-anchor="middle" fill="${INK}">12 feet (3.66 m)</text>`
+  s += L(D.back - 0.3, -D.hw, D.back - 0.3, D.hw, 0.25) + L(D.back - 0.36, -D.hw, D.back - 0.24, -D.hw, 0.25) + L(D.back - 0.36, D.hw, D.back - 0.24, D.hw, 0.25)
+  s += `<text transform="translate(${X(D.back - 0.38)} ${Y(0)}) rotate(-90)" font-size="2.8" text-anchor="middle" fill="${INK}">7 feet (2.13 m)</text>`
+  s += num(X, Y, -0.75, 0.15, 1) + num(X, Y, 1.25, 0.6, 2) + num(X, Y, 2.85, 0.75, 3) + num(X, Y, -1.3, -0.55, 4) + num(X, Y, -0.6, -0.2, 5) + num(X, Y, D.front - 0.35, 0.05, 6) + num(X, Y, 1.95, -0.85, 7) + num(X, Y, D.axles[0], 1.37, 8)
+  return s
+}
+document.getElementById('plan').innerHTML = gridBox(PX0, PX1, PZ0, PZ1, PK, plan)
+document.getElementById('planBlank').innerHTML = gridBox(PX0, PX1, PZ0, PZ1, PK)
+document.getElementById('planKey').innerHTML = [['1', 'changing room'], ['2', 'veranda'], ['3', 'steps down to the sea'], ['4', 'bench'], ['5', "the Queen's loo"], ['6', 'door'], ['7', 'curtains'], ['8', 'wheel']].map(([n, t]) => `<div><i>${n}</i>${t}</div>`).join('')
+</script>
+<script type="module" src="../js/sheet.js"></script>
+</body>
+</html>

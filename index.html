@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astra Victorians</title>
+<meta name="description" content="A Victorian homework kit: research, ideas and printable A4 sheets for every task on the Year 2 Victorians homework list.">
+<meta name="theme-color" content="#f4f4f1">
+<link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon-180.png">
+<script>
+  // Keep Chrome's install offer for our own Install button (js/pwa.js): the menu's Add to home screen says
+  // "already installed" when any app from this site is installed.
+  addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__installOffer = e; dispatchEvent(new Event('install-offer')); });
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="index.html"><img src="assets/icons/icon-192.png" alt="">Astra Victorians</a>
+    <nav class="nav"><a class="on" href="index.html">Tasks</a><a href="victorians.html">Meet the Victorians</a><a href="grown-ups.html">Grown-ups</a><a href="sheets/cover.html">Cover sheet</a><button class="btn install" type="button" data-install hidden>Install app</button></nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Year 2 · The Victorians · Autumn 2026</p>
+      <h1>The Victorian homework kit</h1>
+      <p class="lede">Thirteen tasks from the autumn homework list. Each one has facts to read aloud, ideas, A4 sheets to print, and real Victorian buildings and machines drawn so you can look inside them.</p>
+      <p><a class="btn" href="victorians.html">Meet the Victorians first</a> <a class="btn ghost" href="sheets/cover.html">Print the cover sheet</a></p>
+    </div>
+    <figure><img src="assets/img/classroom.jpg" alt="A Victorian classroom with rows of desks" id="heroimg"><figcaption id="herocap"></figcaption></figure>
+  </section>
+
+  <div class="tracker" id="tracker"><div class="big">0 <small>points so far</small></div><p></p></div>
+
+  <div id="groups"></div>
+
+  <section class="group">
+    <div class="group-head"><h2>Look inside</h2><p>Real buildings and machines, modelled from the plans. Spin them round, lift the roofs off, cut them open to see inside.</p></div>
+    <div class="figs">
+      <a class="fig" href="explore/victorian-school.html"><span class="pv"><img src="assets/previews/explore-school.jpg" alt="" loading="lazy"></span><span class="no">Fig. 01 · Monks Horton, 1852</span><h3>A tiny school for 50 children</h3><p>One room, one fire, a chalk floor and a bell you rang from inside. Ring it, then cut the school open to see inside.</p></a>
+      <a class="fig" href="explore/wrenbury-school.html"><span class="pv"><img src="assets/previews/explore-wrenbury.jpg" alt="" loading="lazy"></span><span class="no">Fig. 02 · Wrenbury, 1879 and now</span><h3>Our school, then and now</h3><p>Wrenbury School from the 1897 map and a photograph, beside a new school on a plot the same size. Ring the bell, then watch the paper models fold.</p></a>
+      <a class="fig" href="explore/bathing-machine.html"><span class="pv"><img src="assets/previews/explore-bathing.jpg" alt="" loading="lazy"></span><span class="no">Fig. 03 · Osborne, 1840s</span><h3>Queen Victoria's bathing machine</h3><p>At its real size, on its grooved stone rails. Wind the winch to roll it down into the sea, then go for a swim with the dipper.</p></a>
+    </div>
+  </section>
+
+  <section class="group">
+    <div class="group-head"><h2>Also in the kit</h2><p>Background, posters and the grown-up pages.</p></div>
+    <div class="cards">
+      <div class="card"><h3><a href="victorians.html">Meet the Victorians</a></h3><p>Who they were, when they lived, what they invented, and a timeline to print.</p><div class="foot"><a href="victorians.html">Open →</a></div></div>
+      <div class="card"><h3><a href="sheets/timeline.html">Timeline poster</a></h3><p>1837 to 1901 on one landscape A4 sheet, for the wall or the green book.</p><div class="foot"><a href="sheets/timeline.html">Open →</a></div></div>
+      <div class="card"><h3><a href="grown-ups.html">For grown-ups</a></h3><p>How the points work, how to print, where every fact came from, and picture credits.</p><div class="foot"><a href="grown-ups.html">Open →</a></div></div>
+    </div>
+  </section>
+</div>
+<footer class="site"><div class="wrap">Astra Victorians, made at home for a Year 2 Victorians topic, autumn 2026. Pictures are public domain or Creative Commons; see <a href="grown-ups.html#credits">credits</a>. No accounts, no tracking: ticks are saved on this device only.</div></footer>
+
+<script type="module">
+import { TASKS } from './js/tasks.js';
+import { CREDITS } from './js/credits.js';
+const groups = [
+  { pts: 5, title: '5 points', blurb: 'Quick ones for a rainy afternoon.' },
+  { pts: 10, title: '10 points', blurb: 'An hour or two, with something to make.' },
+  { pts: 15, title: '15 points', blurb: 'Bigger projects. Spread them over a week.' },
+  { pts: 0, title: 'Bonus', blurb: 'A day out, if we can.' },
+];
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+document.getElementById('groups').innerHTML = groups.map(g => `
+  <section class="group">
+    <div class="group-head"><h2>${g.title}</h2><p>${g.blurb}</p></div>
+    <div class="cards">${TASKS.filter(t => t.pts === g.pts).map(t => `
+      <article class="card" data-task="${t.id}">
+        <img class="thumb" src="assets/img/${t.img}" alt="">
+        <div class="row"><span class="pts ${t.bonus ? 'bonus' : ''}">${t.bonus ? 'BONUS' : t.pts}</span><div><h3><a href="tasks/${t.id}.html">${esc(t.title)}</a></h3><p>${esc(t.brief)}</p></div></div>
+        <div class="foot"><a href="tasks/${t.id}.html">Open →</a><label class="tick"><input type="checkbox"> Done</label></div>
+      </article>`).join('')}</div>
+  </section>`).join('');
+const c = CREDITS['classroom.jpg']; if (c) document.getElementById('herocap').textContent = c.caption + ' · ' + c.credit;
+import('./js/site.js');
+</script>
+<script type="module" src="js/pwa.js"></script>
+</body>
+</html>
