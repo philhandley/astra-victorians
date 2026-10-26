@@ -3,12 +3,11 @@
 // arrows, or ride behind it. Its tricks: people queue, climb up and whoosh down the slide (into the sea if you have
 // backed it in); the band plays under coloured lights and a crowd gathers to dance; the fountains spray and cool down
 // anyone who is too hot. Tap the slide, the stage, an arm, the flower or the shade to make them go; tap a person to say hi.
-// Jobs to do (with pictures, read aloud) and a party when they are all done.
 // Safety: the machine never moves into anyone. Before every move it checks where everyone is; people in its way
 // step aside (a yellow ! over them), and if someone is still in the way it stops and waits. It beeps when reversing,
 // and it will not move while anyone is on the ladder or the slide.
 // Test params: ?at=x,z,heading  ?drive=x,z  ?auto=band,spray,slide,hot,ride  ?sim=seconds (run the world on before
-//              showing)  ?people=16  ?fps  ?mute  ?quiet (no reading aloud)  ?zoom=2  ?turn=1  ?clean (no buttons)  ?fresh (jobs reset)
+//              showing)  ?people=16  ?fps  ?mute  ?quiet (no reading aloud)  ?zoom=2  ?turn=1  ?clean (no buttons)
 import * as THREE from 'three';
 import { World } from './world.js';
 import { build, studioEnvironment } from './machine.js';
@@ -18,14 +17,6 @@ import { Sound } from './sound.js';
 
 const q = new URLSearchParams(location.search);
 const store = { get(k, d) { try { const v = localStorage.getItem('astravic-machine-' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem('astravic-machine-' + k, JSON.stringify(v)); } catch (e) {} } };
-const JOBS = [
-  { id: 'sea', icon: '🌊', text: 'Drive into the sea' },
-  { id: 'slide', icon: '🛝', text: 'Three splashes down the slide' },
-  { id: 'band', icon: '🎸', text: 'Get six people dancing' },
-  { id: 'cool', icon: '⛲', text: 'Cool down three hot people' },
-  { id: 'horn', icon: '📯', text: 'Toot the horn' },
-  { id: 'huts', icon: '🏖️', text: 'Drive up to the beach huts' },
-];
 const app = document.getElementById('app');
 app.innerHTML = `
 <div class="shell">
@@ -43,7 +34,6 @@ app.innerHTML = `
     <div class="world"></div>
     <div class="ui">
       <div class="hint"></div>
-      <div class="jobs"><b>Jobs</b>${JOBS.map(j => `<button class="job" data-job="${j.id}" aria-label="${j.text}"><i>${j.icon}</i><span>${j.text}</span></button>`).join('')}</div>
       <div class="cam">
         <button class="cb" data-a="turnL" aria-label="Turn the view left">⟲</button><button class="cb" data-a="turnR" aria-label="Turn the view right">⟳</button>
         <button class="cb" data-a="zoomIn" aria-label="Zoom in">＋</button><button class="cb" data-a="zoomOut" aria-label="Zoom out">－</button>
@@ -99,22 +89,6 @@ const throttle = {};
 const once = (key, ms, fn) => { const now = performance.now(); if (now - (throttle[key] || -1e9) > ms) { throttle[key] = now; fn(); } };
 hint('Tap the sand or the sea and the machine drives there. Try backing it into the sea!', 8, false);
 $('[data-a="voice"]').classList.toggle('off', !voiceOn);
-
-// ---------------------------------------------------------------- jobs
-const done = new Set(q.has('fresh') ? [] : store.get('jobs', []));
-const counts = { splash: 0, cooled: 0 };
-function showJobs() { for (const b of app.querySelectorAll('[data-job]')) b.classList.toggle('done', done.has(b.dataset.job)); }
-showJobs();
-function jobDone(id) {
-  if (done.has(id)) return;
-  done.add(id); store.set('jobs', [...done]); showJobs();
-  const b = $(`[data-job="${id}"]`); b.classList.add('pop'); setTimeout(() => b.classList.remove('pop'), 900);
-  sound.fanfare();
-  const j = JOBS.find(x => x.id === id);
-  if (done.size === JOBS.length) { setTimeout(() => { hint('You did every job! Party time on the beach!', 7); party(); }, 900); }
-  else hint(`Well done! ${j.text}: done. ${JOBS.length - done.size} more ${JOBS.length - done.size === 1 ? 'job' : 'jobs'} to go.`, 5);
-}
-app.querySelectorAll('[data-job]').forEach(b => b.addEventListener('click', () => { sound.ensure(); const j = JOBS.find(x => x.id === b.dataset.job); hint(done.has(j.id) ? `${j.text}. You did it!` : `Job: ${j.text}.`, 4); }));
 
 // ---------------------------------------------------------------- the machine on its tracks, and keeping everyone safe
 const [ax, az, ah] = (q.get('at') || '0,7,0').split(',').map(Number);
@@ -241,8 +215,7 @@ function drive(dt) {
     const p = toWorld(lx, 0, lz);
     if (WATER - ground(p.x, p.z) > 0.15 && Math.random() < speed * 0.9) emit(p.x + (Math.random() - 0.5), WATER, p.z + (Math.random() - 0.5), (Math.random() - 0.5) * 2, 1.5 + Math.random() * 2, (Math.random() - 0.5) * 2, 1.5, 0.8, false);
   }
-  if (dNow > 0.5) { jobDone('sea'); if (!seaHinted) { seaHinted = true; hint('Splash! You are in the sea. Press Slide and the swimmers whoosh into the water.', 6); } }
-  if (car.z > 10) jobDone('huts');
+  if (dNow > 0.5 && !seaHinted) { seaHinted = true; hint('Splash! You are in the sea. Press Slide and the swimmers whoosh into the water.', 6); }
   parkedT = speed < 0.05 ? parkedT + dt : 0;
 }
 
@@ -438,7 +411,6 @@ function cool(p) {
   p.hot = false; p.showIcon('cool', 2.6); sound.pop();
   if (p.state !== 'lie') { p.pose = 'cheer'; p.cheerT = 1.6; p.target = null; }
   else p.cheerT = 0;
-  if (++counts.cooled >= 3) jobDone('cool');
 }
 
 // ---------------------------------------------------------------- beach balls: people kick them, the machine can nudge them
@@ -578,7 +550,6 @@ function ride(R, dt) {
       const x = p.pos.x; p.walkTo(x + (Math.random() - 0.5) * 5, shoreZ(x) + 1.5);
       for (const o of people) if (onBeach(o) && o !== p && o.state === 'wander' && o.pos.distanceTo(p.pos) < 12 && !o.evade) { o.pose = 'cheer'; o.cheerT = 1.2; }
       riders.splice(riders.indexOf(R), 1);
-      if (++counts.splash >= 3) jobDone('slide');
     } else if (!deep && p.pos.y <= gy) {
       p.pos.y = gy; sound.pop(); p.dropRing();
       p.locked = false; p.state = 'wander'; p.pose = 'cheer'; p.cheerT = 1.2; p.heading = p.g.rotation.y; p.g.rotation.set(0, p.heading, 0); p.timer = 1.5;
@@ -660,45 +631,12 @@ function updateBand(dt) {
   }
   if (bandOn) beams.forEach((c, i) => { c.material.opacity = 0.14 + 0.12 * Math.max(0, Math.cos((beat % 1) * Math.PI * 2 + i)); c.rotation.z = Math.sin(beat * 0.5 + i) * 0.12; });
   for (const s of notes) { if (s.userData.t >= 1) { s.visible = false; continue; } s.userData.t += dt / 2.2; s.position.y += dt * 1.2; s.position.x += s.userData.vx * dt; s.material.opacity = 1 - s.userData.t; }
-  let dancing = 0;
   crowd.forEach((p, i) => {
     if (p.evade) return;
     const s = crowdSpot(i), d = Math.hypot(p.pos.x - s.x, p.pos.z - s.z);
     if (d > 0.4) { if (!p.target || Math.hypot(p.target.x - s.x, p.target.y - s.z) > 0.4) p.walkTo(s.x, s.z); if (p.pose === 'dance') p.pose = 'idle'; }
     else if (!p.target) { const st = toWorld(0, 0, P.stage.z); p.face(st.x, st.z); p.pose = p.swimming ? 'idle' : 'dance'; p.beat = beat + (p.id % 3) * 0.15; }
-    if (p.pose === 'dance') dancing++;
   });
-  if (bandOn && dancing >= 6) jobDone('band');
-}
-
-// ---------------------------------------------------------------- the party when every job is done: confetti
-const CONF = 220;
-const confetti = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.16, 0.24), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), CONF);
-confetti.frustumCulled = false; confetti.visible = false; world.scene.add(confetti);
-const cp = new Float32Array(CONF * 3), cv = new Float32Array(CONF * 3), cr = new Float32Array(CONF);
-let partyT = 0;
-for (let i = 0; i < CONF; i++) confetti.setColorAt(i, new THREE.Color(BEAM_COLS[i % BEAM_COLS.length]));
-function party() {
-  sound.fanfare(); setTimeout(() => sound.cheer(), 300);
-  if (!bandOn) toggleBand(true);
-  partyT = 7; confetti.visible = true;
-  for (let i = 0; i < CONF; i++) {
-    cp[i * 3] = car.x + (Math.random() - 0.5) * 3; cp[i * 3 + 1] = M.position.y + 6.5; cp[i * 3 + 2] = car.z + (Math.random() - 0.5) * 3;
-    const a = Math.random() * Math.PI * 2, s = 2 + Math.random() * 5; cv[i * 3] = Math.cos(a) * s; cv[i * 3 + 1] = 4 + Math.random() * 6; cv[i * 3 + 2] = Math.sin(a) * s; cr[i] = Math.random() * 6;
-  }
-  for (const p of people) if (onBeach(p) && p.state !== 'lie') { p.pose = 'cheer'; p.cheerT = 2.5; }
-}
-const cq = new THREE.Quaternion(), ce = new THREE.Euler(), cpv = new THREE.Vector3(), one = new THREE.Vector3(1, 1, 1);
-function updateConfetti(dt) {
-  if (partyT <= 0) return;
-  partyT -= dt; if (partyT <= 0) { confetti.visible = false; return; }
-  for (let i = 0; i < CONF; i++) {
-    cv[i * 3 + 1] = Math.max(cv[i * 3 + 1] - 9.8 * dt, -1.6); cv[i * 3] *= 0.985; cv[i * 3 + 2] *= 0.985;
-    cp[i * 3] += cv[i * 3] * dt; cp[i * 3 + 1] = Math.max(ground(cp[i * 3], cp[i * 3 + 2]) + 0.02, cp[i * 3 + 1] + cv[i * 3 + 1] * dt); cp[i * 3 + 2] += cv[i * 3 + 2] * dt;
-    cr[i] += dt * 7; ce.set(cr[i], cr[i] * 0.7, 0); cq.setFromEuler(ce); cpv.set(cp[i * 3], cp[i * 3 + 1], cp[i * 3 + 2]);
-    confetti.setMatrixAt(i, m4.compose(cpv, cq, one));
-  }
-  confetti.instanceMatrix.needsUpdate = true;
 }
 
 // ---------------------------------------------------------------- riding behind the machine
@@ -721,7 +659,7 @@ function placeChase(k) {
 // ---------------------------------------------------------------- tapping things
 function tap(cx, cy) {
   const ray = world.rayFrom(cx, cy);
-  const hit = ray.intersectObjects([M, ...people.map(p => p.g), ...balls.map(b => b.m)], true).find(h => h.object.visible && !h.object.isSprite && h.object !== marks && h.object !== confetti);
+  const hit = ray.intersectObjects([M, ...people.map(p => p.g), ...balls.map(b => b.m)], true).find(h => h.object.visible && !h.object.isSprite && h.object !== marks);
   if (hit) {
     const ball = balls.find(b => b.m === hit.object);
     if (ball) { ball.v.set((Math.random() - 0.5) * 3, 5, (Math.random() - 0.5) * 3); sound.bonk(); return; }
@@ -782,7 +720,6 @@ function update(dt) {
   heatUp(dt);
   updateSlide(dt);
   updateBand(dt);
-  updateConfetti(dt);
   for (const p of people) { think(p, dt); p.update(dt, ctx); if (onBeach(p)) keepOut(p); }
   marker.scale.setScalar(1 + Math.sin(performance.now() / 180) * 0.08);
   if (hintT > 0) { hintT -= dt; if (hintT <= 0) hintEl.textContent = ''; }
@@ -819,7 +756,7 @@ const ACTS = {
   slide: () => sendToSlide(),
   band: () => toggleBand(),
   spray: () => setSpray(!spraying),
-  horn: () => { sound.horn(); jobDone('horn'); for (const p of people) if (onBeach(p) && p.pos.distanceTo(M.position) < 9 && p.state !== 'lie' && !p.evade) { p.pose = 'cheer'; p.cheerT = 0.8; } },
+  horn: () => { sound.horn(); for (const p of people) if (onBeach(p) && p.pos.distanceTo(M.position) < 9 && p.state !== 'lie' && !p.evade) { p.pose = 'cheer'; p.cheerT = 0.8; } },
   turnL: () => world.turn(-1), turnR: () => world.turn(1),
   zoomIn: () => { world.camera.zoom = Math.min(3.4, world.camera.zoom * 1.25); world.camera.updateProjectionMatrix(); },
   zoomOut: () => { world.camera.zoom = Math.max(0.7, world.camera.zoom / 1.25); world.camera.updateProjectionMatrix(); },
@@ -838,11 +775,10 @@ for (const a of (q.get('auto') || '').split(',').filter(Boolean)) {
   if (a === 'slide') sendToSlide();
   if (a === 'hot') people.slice(4, 8).forEach(p => { p.hot = true; p.showIcon('hot'); p.pose = 'fan'; });
   if (a === 'ride') setRide(true);
-  if (a === 'party') party();
 }
 if (q.has('clean')) { $('.ui').hidden = true; hintEl.textContent = ''; }
 if (q.get('zoom')) { world.camera.zoom = +q.get('zoom'); world.camera.updateProjectionMatrix(); }
 if (q.get('turn')) for (let i = 0; i < +q.get('turn'); i++) { world.turn(1); for (let k = 0; k < 20; k++) world.step(0.05); }
 if (q.get('sim')) { const n = +q.get('sim') * 30; for (let i = 0; i < n; i++) update(1 / 30); }
 world.start();
-window.__game = { riders, queue, world, car, people, M, update, setTarget, toggleBand, sendToSlide, clearance, PR, pad, stepAside, balls, jobs: done, setRide, safety, counts };
+window.__game = { riders, queue, world, car, people, M, update, setTarget, toggleBand, sendToSlide, clearance, PR, pad, stepAside, balls, setRide, safety };

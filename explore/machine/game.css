@@ -32,18 +32,6 @@ button, a { font-family: var(--font); color: var(--ink); }
 .cb { appearance: none; border: 0; cursor: pointer; height: 44px; border-radius: 14px; background: var(--paper-2); font-size: 18px; font-weight: 700; display: grid; place-items: center; }
 .cb.wide { grid-column: 1 / -1; font-size: 12px; font-weight: 700; height: 40px; }
 .cb.on { background: var(--ink); color: #fff; }
-/* jobs, top left: a picture for each, ticked when done */
-.jobs { left: 12px; top: 12px; width: 214px; background: rgba(255,255,255,.95); border-radius: 22px; box-shadow: var(--shadow); padding: 10px 8px 8px; display: flex; flex-direction: column; gap: 4px; }
-.jobs > b { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); padding: 0 8px 2px; }
-.job { appearance: none; border: 0; cursor: pointer; background: transparent; border-radius: 14px; padding: 5px 6px; display: grid; grid-template-columns: 40px 1fr; gap: 8px; align-items: center; text-align: left; position: relative; }
-.job:active { background: var(--paper-2); }
-.job i { font-style: normal; width: 40px; height: 40px; border-radius: 12px; background: var(--paper-2); display: grid; place-items: center; font-size: 22px; position: relative; }
-.job span { font-size: 13px; font-weight: 600; line-height: 1.2; color: var(--ink-2); }
-.job.done i { background: #dff5e8; }
-.job.done i::after { content: '✓'; position: absolute; right: -5px; bottom: -5px; width: 20px; height: 20px; border-radius: 50%; background: var(--green); color: #fff; font-size: 13px; font-weight: 800; display: grid; place-items: center; box-shadow: 0 0 0 2px #fff; }
-.job.done span { color: var(--ink); }
-.job.pop i { animation: pop .9s ease-out; }
-@keyframes pop { 0% { transform: scale(1); } 30% { transform: scale(1.45) rotate(-8deg); } 60% { transform: scale(.92); } 100% { transform: scale(1); } }
 /* the driving pad, bottom left */
 .pad { left: 14px; bottom: 14px; width: 216px; height: 216px; background: rgba(255,255,255,.92); border-radius: 50%; box-shadow: var(--shadow); }
 .pb { appearance: none; border: 0; cursor: pointer; position: absolute; width: 72px; height: 72px; border-radius: 22px; background: var(--paper-2); font-size: 30px; font-weight: 800; display: grid; place-items: center; touch-action: none; }
@@ -59,9 +47,7 @@ button, a { font-family: var(--font); color: var(--ink); }
 .act:active { transform: scale(.96); }
 .act.slide.on { background: var(--pink); } .act.spray.on { background: var(--sea); } .act.band.on { background: #7b61ff; }
 .fps { position: absolute; left: 50%; bottom: 120px; transform: translateX(-50%); background: rgba(38,39,45,.82); color: #fff; font: 600 13px/1 ui-monospace, Consolas, monospace; padding: 6px 10px; border-radius: 999px; pointer-events: none; z-index: 40; white-space: nowrap; }
-@media (max-height: 760px) { .jobs { gap: 1px; padding-top: 7px; } .job i { width: 34px; height: 34px; font-size: 19px; } .job { grid-template-columns: 34px 1fr; padding: 3px 6px; } }
 @media (max-width: 900px) {
-  .jobs { width: auto; } .job { grid-template-columns: 34px; } .job span, .jobs > b { display: none; }
   .act { width: 84px; height: 80px; } .act i { font-size: 30px; }
   .pad { transform: scale(.85); transform-origin: left bottom; }
   .brand b { font-size: 16px; } .acts .ab span { display: none; }
