@@ -189,7 +189,7 @@ function drive(dt) {
     }
   }
   // nobody drives off while someone is climbing or sliding
-  if (slider && (vT || wT)) { vT = 0; wT = 0; once('slider', 5000, () => hint('Wait! Someone is on the slide. Off we go when they splash down.', 4)); }
+  if (riders.length && (vT || wT)) { vT = 0; wT = 0; once('slider', 5000, () => hint('Wait! Someone is on the slide. Off we go when they splash down.', 4)); }
   // look ahead: anyone near where it is about to go hops aside, and it slows right down
   if (Math.abs(vT) > 0.05 || Math.abs(wT) > 0.05) {
     const dir = Math.sign(vT), la = 1.4 + Math.abs(car.v) * 1.2;
@@ -361,32 +361,39 @@ beach.towels.slice(0, 4).forEach((t, i) => {                    // sunbathers
   if (clearance(t.x, t.z, car.x, car.z, car.h) < 1.5) return;
   const p = people[i]; p.pos.set(t.x, ground(t.x, t.z), t.z); p.state = 'lie'; p.pose = 'lie'; p.heading = t.a; p.towel = t;
 });
-// walking: if someone's straight path crosses the machine (or the stretch just ahead of it while it moves), they
-// walk round it, one way round, kept until they are well clear
+// walking: if someone's straight path crosses a part of the machine (its body, with the stretch just ahead of it while
+// it moves, or the low end of the slide), they walk round that part, one way round, kept until they are well clear
 function avoid(x, z, p) {
-  const [lx, lz] = localXZ(x, z), moving = Math.abs(car.v) > 0.3;
-  const X = 3.3 + PR, Z0 = -5.0 - PR - (moving && car.v < 0 ? 2 : 0), Z1 = 4.0 + PR + (moving && car.v > 0 ? 2 : 0), BAND = 0.9;
-  const ox = Math.max(-X - lx, 0, lx - X), oz = Math.max(Z0 - lz, 0, lz - Z1), out = Math.hypot(ox, oz);
-  if (out > BAND + 0.6) { if (p) p.side = null; return null; }
-  if (out > BAND) return null;
-  const goal = p ? (p.evade || p.target) : null;
-  let blocked = out === 0;
-  if (!blocked && goal) {
-    const [gx, gz] = localXZ(goal.x, goal.y);
-    for (let t = 0.1; t <= 1.001 && !blocked; t += 0.1) { const sx = lx + (gx - lx) * t, sz = lz + (gz - lz) * t; blocked = sx > -X && sx < X && sz > Z0 && sz < Z1; }
+  const [lx, lz] = localXZ(x, z), moving = Math.abs(car.v) > 0.3, BAND = 0.9;
+  const goal = p ? (p.evade || p.target) : null, [gx, gz] = goal ? localXZ(goal.x, goal.y) : [lx, lz];
+  const rects = [
+    { x0: FOOT[0].x0 - PR, x1: FOOT[0].x1 + PR, z0: FOOT[0].z0 - PR - (moving && car.v < 0 ? 2 : 0), z1: FOOT[0].z1 + PR + (moving && car.v > 0 ? 2 : 0) },
+    { x0: FOOT[1].x0 - PR, x1: FOOT[1].x1 + PR, z0: FOOT[1].z0 - PR, z1: FOOT[1].z1 + PR },
+  ];
+  if (p && !p.sides) p.sides = [null, null];
+  for (let k = 0; k < rects.length; k++) {
+    const R = rects[k];
+    const ox = Math.max(R.x0 - lx, 0, lx - R.x1), oz = Math.max(R.z0 - lz, 0, lz - R.z1), out = Math.hypot(ox, oz);
+    if (out > BAND + 0.6) { if (p) p.sides[k] = null; continue; }
+    if (out > BAND) continue;
+    let blocked = out === 0;
+    for (let t = 0.1; t <= 1.001 && !blocked && goal; t += 0.1) { const sx = lx + (gx - lx) * t, sz = lz + (gz - lz) * t; blocked = sx > R.x0 && sx < R.x1 && sz > R.z0 && sz < R.z1; }
+    if (!blocked) continue;
+    // the face they are at, as an outward normal
+    let px = 0, pz = 0;
+    if (out === 0) { const dl = lx - R.x0, dr = R.x1 - lx, db = lz - R.z0, df = R.z1 - lz, mn = Math.min(dl, dr, db, df); if (mn === dl) px = -1; else if (mn === dr) px = 1; else if (mn === db) pz = -1; else pz = 1; }
+    else if (ox >= oz) px = lx > (R.x0 + R.x1) / 2 ? 1 : -1; else pz = lz > (R.z0 + R.z1) / 2 ? 1 : -1;
+    let ux = -pz, uz = px;                                        // anticlockwise along that face
+    if (p && p.sides[k] == null) {
+      const along = (gx - lx) * ux + (gz - lz) * uz, cx = lx - (R.x0 + R.x1) / 2, cz = lz - (R.z0 + R.z1) / 2;
+      if (k === 1) p.sides[k] = px ? (uz < 0 ? 1 : -1) : ((gx - lx) * ux >= 0 ? 1 : -1);          // round the far end of the slide, never into the body
+      else p.sides[k] = Math.abs(along) > 0.5 ? Math.sign(along) : (cx * ux + cz * uz >= 0 ? 1 : -1);
+    }
+    if (p) { ux *= p.sides[k]; uz *= p.sides[k]; }
+    const kk = out === 0 ? 1 : 0.25, tx = px * kk + ux * 0.75, tz = pz * kk + uz * 0.75, c = Math.cos(car.h), s2 = Math.sin(car.h);
+    return { x: tx * c + tz * s2, z: -tx * s2 + tz * c };
   }
-  if (!blocked) return null;
-  let px = 0, pz = 0;
-  if (out === 0) { const dl = lx + X, dr = X - lx, db = lz - Z0, df = Z1 - lz, mn = Math.min(dl, dr, db, df); if (mn === dl) px = -1; else if (mn === dr) px = 1; else if (mn === db) pz = -1; else pz = 1; }
-  else if (ox >= oz) px = lx > 0 ? 1 : -1; else pz = lz > 0 ? 1 : -1;
-  let ux = -pz, uz = px;
-  if (p && p.side == null) {
-    const [gx, gz] = goal ? localXZ(goal.x, goal.y) : [lx, lz], along = (gx - lx) * ux + (gz - lz) * uz;
-    p.side = Math.abs(along) > 0.5 ? Math.sign(along) : (lx * ux + lz * uz >= 0 ? 1 : -1);
-  }
-  if (p) { ux *= p.side; uz *= p.side; }
-  const k = out === 0 ? 1 : 0.25, tx = px * k + ux * 0.75, tz = pz * k + uz * 0.75, c = Math.cos(car.h), s = Math.sin(car.h);
-  return { x: tx * c + tz * s, z: -tx * s + tz * c };
+  return null;
 }
 // and nobody can walk into it: anyone who has stepped into its room is stopped at the nearest edge that is clear of
 // every part of it (the body and the low end of the slide overlap, so a spot outside one can still be inside the other)
@@ -474,65 +481,108 @@ function updateBalls(dt) {
   }
 }
 
-// ---------------------------------------------------------------- the slide: queue, climb, whoosh, splash
-const queue = []; let slider = null;
+// ---------------------------------------------------------------- the slide: queue, climb, a rubber ring, wheee, splash
+// It is a water slide: water runs down the chute and pours off the end. Up to three people can be on it at once:
+// the next one climbs as soon as the one before has pushed off from the top.
+const queue = [], riders = [];
+const RING_COLS = ['#ff5fa2', '#ffd23f', '#4fd8ff', '#ff8a3d', '#7bd389', '#a77bff'];
 const QZ = (P.ladder.foot.z) - 0.25;
 const queueSpot = i => toWorld(0, 0, QZ - i * 0.85);
 function sendToSlide(n = 4, quiet = false) {
   const foot = queueSpot(0);
   const free = people.filter(p => (p.state === 'wander' || p.state === 'concert') && onBeach(p) && !queue.includes(p)).sort((a, b) => a.pos.distanceToSquared(foot) - b.pos.distanceToSquared(foot));
   for (const p of free.slice(0, Math.max(0, n - queue.length))) { p.state = 'queue'; p.pose = 'idle'; queue.push(p); if (crowd.includes(p)) crowd.splice(crowd.indexOf(p), 1); }
-  if (!quiet) hint(WATER - ground(foot.x, foot.z) > 0.4 ? 'Here they come! They climb up the ladder and whoosh down into the sea.' : 'Here they come! Back the slide over the sea for a big splash.', 5);
+  if (!quiet) hint(WATER - ground(foot.x, foot.z) > 0.4 ? 'Here they come! Up the ladder, on to a rubber ring, and wheee into the sea!' : 'Here they come! Back the slide over the sea for a big splash.', 5);
 }
-let qSort = 0, selfT = 8;
+// the water running down the chute: a thin film that follows its round bottom, its ripples scrolling down
+const slideWater = (() => {
+  const c = document.createElement('canvas'); c.width = 64; c.height = 128; const g = c.getContext('2d');
+  g.fillStyle = 'rgba(255,255,255,0.18)'; g.fillRect(0, 0, 64, 128);
+  for (let i = 0; i < 26; i++) { g.strokeStyle = 'rgba(255,255,255,' + (0.35 + Math.random() * 0.5).toFixed(2) + ')'; g.lineWidth = 1 + Math.random() * 2.5; const x = Math.random() * 64, y = Math.random() * 128; g.beginPath(); g.moveTo(x, y); g.bezierCurveTo(x + 4, y + 10, x - 4, y + 20, x + 2, y + 30); g.stroke(); }
+  const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.colorSpace = THREE.SRGBColorSpace;
+  const seg = 70, across = 8, half = 0.5, ri0 = 1.85 * 0.4, pos = [], uv = [], idx = [], hh = new THREE.Vector3(0, 0, -1);
+  for (let k = 0; k <= seg; k++) {
+    const t = k / seg, pt = P.slide.getPointAt(t), tan = P.slide.getTangentAt(t), hz = new THREE.Vector3(tan.x, 0, tan.z);
+    if (hz.lengthSq() > 1e-4) hh.lerp(hz.normalize(), k ? 0.5 : 1).normalize();
+    const side = new THREE.Vector3(-hh.z, 0, hh.x), nrm = new THREE.Vector3().crossVectors(side, tan).normalize();
+    const r = ri0 * (1 + 0.12 * Math.max(0, 1 - t / 0.3) ** 2);
+    for (let j = 0; j <= across; j++) {
+      const off = (j / across * 2 - 1) * half, lift = r - Math.sqrt(r * r - off * off) - 0.04 + 0.025;
+      const v = pt.clone().addScaledVector(side, off).addScaledVector(nrm, lift); pos.push(v.x, v.y, v.z); uv.push(j / across, t * 6);
+    }
+  }
+  for (let k = 0; k < seg; k++) for (let j = 0; j < across; j++) { const i0 = k * (across + 1) + j, i1 = i0 + 1, i2 = i0 + across + 1, i3 = i2 + 1; idx.push(i0, i2, i1, i1, i2, i3); }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.setIndex(idx);
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, color: '#d8f6ff', transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide }));
+  m.renderOrder = 2; M.add(m);
+  return tex;
+})();
+let qSort = 0, selfT = 8, pour = 0;
 function updateSlide(dt) {
+  slideWater.offset.y += dt * 1.6;
+  // water pouring off the end
+  const end = P.slide.getPointAt(1), tanE = P.slide.getTangentAt(1), endW = toWorld(end.x, end.y, end.z);
+  const dirE = new THREE.Vector3().copy(tanE).transformDirection(M.matrixWorld);
+  for (pour += dt * 40; pour >= 1; pour--) emit(endW.x + (Math.random() - 0.5) * 0.5, endW.y, endW.z + (Math.random() - 0.5) * 0.5, dirE.x * 1.6 + (Math.random() - 0.5) * 0.5, dirE.y * 1.6, dirE.z * 1.6 + (Math.random() - 0.5) * 0.5, 1.5, 0.7, false);
   if ((qSort -= dt) <= 0) { qSort = 1; const f = queueSpot(0); queue.sort((a, b) => a.pos.distanceToSquared(f) - b.pos.distanceToSquared(f)); }
-  queue.forEach((p, i) => { const s = queueSpot(i); if (!p.target || Math.hypot(p.target.x - s.x, p.target.y - s.z) > 0.3) p.walkTo(s.x, s.z); });
+  queue.forEach((p, i) => { const sp = queueSpot(i); if (!p.target || Math.hypot(p.target.x - sp.x, p.target.y - sp.z) > 0.3) p.walkTo(sp.x, sp.z); });
   // when it is parked with the slide over the sea, now and then someone goes down on their own
-  const end = P.slide.getPointAt(1), endW = toWorld(end.x, 0, end.z);
-  if (parkedT > 4 && !queue.length && !slider && WATER - ground(endW.x, endW.z) > 0.6 && (selfT -= dt) <= 0) { selfT = 10 + Math.random() * 8; sendToSlide(1, true); }
-  const s0 = queueSpot(0);
-  if (!slider && queue[0] && !queue[0].evade && Math.hypot(queue[0].pos.x - s0.x, queue[0].pos.z - s0.z) < 0.4 && Math.abs(car.v) < 0.05 && Math.abs(car.w) < 0.05) {
+  if (parkedT > 4 && !queue.length && !riders.length && WATER - ground(endW.x, endW.z) > 0.6 && (selfT -= dt) <= 0) { selfT = 10 + Math.random() * 8; sendToSlide(1, true); }
+  // the next one climbs when nobody is on the ladder or still at the top
+  const s0 = queueSpot(0), ladderFree = !riders.some(r => r.phase === 'climb' || r.phase === 'step' || r.phase === 'sit');
+  if (ladderFree && riders.length < 3 && queue[0] && !queue[0].evade && Math.hypot(queue[0].pos.x - s0.x, queue[0].pos.z - s0.z) < 0.4 && Math.abs(car.v) < 0.05 && Math.abs(car.w) < 0.05) {
     const p = queue.shift();
     p.locked = true; p.target = null; p.evade = null; p.state = 'slide';
     M.attach(p.g); p.g.position.set(0, 0, P.ladder.z - 0.32); p.g.rotation.set(0, 0, 0); p.pose = 'climb';
-    slider = { p, phase: 'climb', t: 0 };
+    riders.push({ p, phase: 'climb', t: 0 });
   }
-  if (!slider) return;
-  const S2 = slider, p = S2.p;
-  if (S2.phase === 'climb') {
-    S2.t += dt / 2.4; p.g.position.y = Math.min(1, S2.t) * P.ladder.top.y;
-    if (S2.t >= 1) { S2.phase = 'step'; S2.t = 0; S2.path = [p.g.position.clone(), new THREE.Vector3(0, P.whiteTop.y, P.whiteTop.z), new THREE.Vector3(P.slideTop.x, P.slideTop.y, P.slideTop.z + 0.2)]; S2.leg = 0; p.pose = 'walk'; }
-  } else if (S2.phase === 'step') {
-    const a = S2.path[S2.leg], b = S2.path[S2.leg + 1], d = a.distanceTo(b);
-    S2.t += dt * 1.3 / Math.max(0.1, d);
-    p.g.position.lerpVectors(a, b, Math.min(1, S2.t)); p.g.rotation.y = Math.atan2(b.x - a.x, b.z - a.z);
-    if (S2.t >= 1) { S2.t = 0; S2.leg++; if (S2.leg >= S2.path.length - 1) { S2.phase = 'sit'; p.pose = 'slide'; } }
-  } else if (S2.phase === 'sit') {
+  for (const r of [...riders]) ride(r, dt);
+}
+function ride(R, dt) {
+  const p = R.p;
+  if (R.phase === 'climb') {
+    R.t += dt / 2.0; p.g.position.y = Math.min(1, R.t) * P.ladder.top.y;
+    if (R.t >= 1) { R.phase = 'step'; R.t = 0; R.path = [p.g.position.clone(), new THREE.Vector3(0, P.whiteTop.y, P.whiteTop.z), new THREE.Vector3(P.slideTop.x, P.slideTop.y, P.slideTop.z + 0.2)]; R.leg = 0; p.pose = 'walk'; }
+  } else if (R.phase === 'step') {
+    const a = R.path[R.leg], b = R.path[R.leg + 1], d = a.distanceTo(b);
+    R.t += dt * 1.5 / Math.max(0.1, d);
+    p.g.position.lerpVectors(a, b, Math.min(1, R.t)); p.g.rotation.y = Math.atan2(b.x - a.x, b.z - a.z);
+    if (R.t >= 1) { R.t = 0; R.leg++; if (R.leg >= R.path.length - 1) { R.phase = 'sit'; p.pose = 'slide'; p.giveRing(RING_COLS[p.id % RING_COLS.length]); sound.pop(); } }
+  } else if (R.phase === 'sit') {
     const tan = P.slide.getTangentAt(0.02); p.g.rotation.y = Math.atan2(tan.x, tan.z);
-    S2.t += dt; if (S2.t > 0.5) { S2.phase = 'slide'; S2.t = 0; S2.u = 0; sound.whoosh(); }
-  } else if (S2.phase === 'slide') {
-    S2.u = Math.min(1, S2.u + dt * (0.3 + 1.3 * S2.u));
-    const pt = P.slide.getPointAt(S2.u), tan = P.slide.getTangentAt(S2.u);
-    p.g.position.copy(pt); p.g.rotation.set(-Math.asin(THREE.MathUtils.clamp(tan.y, -1, 1)) * 0.35, Math.atan2(tan.x, tan.z), 0, 'YXZ');
-    if (S2.u >= 1) {
-      world.scene.attach(p.g);
-      const v = new THREE.Vector3().copy(tan).transformDirection(M.matrixWorld).multiplyScalar(4.5);
-      S2.phase = 'fly'; S2.v = v; p.pose = 'fall'; p.g.rotation.set(0, Math.atan2(v.x, v.z), 0);
+    R.t += dt;
+    if (R.t > 0.45 && !riders.some(o => o !== R && o.phase === 'slide' && o.u < 0.25)) {   // (a gap behind whoever went before)
+      R.phase = 'slide'; R.t = 0; R.u = 0; R.turn = 0;
+      R.spin = Math.random() < 0.65 ? (Math.random() < 0.5 ? -1 : 1) * (3 + Math.random() * 5) : 0;
+      p.pose = Math.random() < 0.5 ? 'ride' : 'slide'; p.showIcon('whee', 1.8);
+      sound.whoosh(); sound.whee(0.85 + (p.id % 5) * 0.1);
     }
-  } else if (S2.phase === 'fly') {
-    S2.v.y -= 9.8 * dt; p.pos.addScaledVector(S2.v, dt);
+  } else if (R.phase === 'slide') {
+    R.u = Math.min(1, R.u + dt * (0.3 + 1.6 * R.u));
+    R.turn += R.spin * dt;
+    const pt = P.slide.getPointAt(R.u), tan = P.slide.getTangentAt(R.u);
+    p.g.position.copy(pt); p.g.rotation.set(-Math.asin(THREE.MathUtils.clamp(tan.y, -1, 1)) * 0.3, Math.atan2(tan.x, tan.z) + R.turn, 0, 'YXZ');
+    if (Math.random() < 0.5) { const w = p.g.getWorldPosition(new THREE.Vector3()); emit(w.x, w.y + 0.2, w.z, (Math.random() - 0.5) * 1.6, 1.2 + Math.random() * 1.5, (Math.random() - 0.5) * 1.6, 1, 0.6, false); }
+    if (R.u >= 1) {
+      world.scene.attach(p.g);
+      R.v = new THREE.Vector3().copy(tan).transformDirection(M.matrixWorld).multiplyScalar(5.2); R.v.y += 2.4;    // off the end with a hop
+      R.phase = 'fly'; p.pose = 'ride'; R.twirl = (Math.random() < 0.5 ? -1 : 1) * (6 + Math.random() * 4);
+    }
+  } else if (R.phase === 'fly') {
+    R.v.y -= 9.8 * dt; p.pos.addScaledVector(R.v, dt); p.g.rotation.y += R.twirl * dt; p.g.rotation.x = 0;
     const gy = ground(p.pos.x, p.pos.z), deep = WATER - gy > 0.55;
-    if (deep && p.pos.y < WATER - 0.3) {
-      splash(p.pos.x, p.pos.z, 1.3); sound.cheer();
-      p.locked = false; p.state = 'swim'; p.pose = 'idle'; p.heading = p.g.rotation.y; if (p.hot) cool(p); else p.showIcon('cool', 2);
-      const x = p.pos.x; p.walkTo(x + (Math.random() - 0.5) * 4, shoreZ(x) + 1.5);
-      slider = null;
+    if (deep && p.pos.y < WATER - 0.35) {
+      splash(p.pos.x, p.pos.z, 1.6); sound.cheer();
+      p.locked = false; p.state = 'swim'; p.floating = true; p.pose = 'float'; p.pos.y = WATER - 0.42; p.heading = p.g.rotation.y; p.g.rotation.set(0, p.heading, 0);
+      if (p.hot) cool(p); else p.showIcon('cool', 2);
+      const x = p.pos.x; p.walkTo(x + (Math.random() - 0.5) * 5, shoreZ(x) + 1.5);
+      for (const o of people) if (onBeach(o) && o !== p && o.state === 'wander' && o.pos.distanceTo(p.pos) < 12 && !o.evade) { o.pose = 'cheer'; o.cheerT = 1.2; }
+      riders.splice(riders.indexOf(R), 1);
       if (++counts.splash >= 3) jobDone('slide');
     } else if (!deep && p.pos.y <= gy) {
-      p.pos.y = gy; sound.pop();
-      p.locked = false; p.state = 'wander'; p.pose = 'cheer'; p.cheerT = 1.2; p.heading = p.g.rotation.y; p.timer = 1.5;
-      slider = null;
+      p.pos.y = gy; sound.pop(); p.dropRing();
+      p.locked = false; p.state = 'wander'; p.pose = 'cheer'; p.cheerT = 1.2; p.heading = p.g.rotation.y; p.g.rotation.set(0, p.heading, 0); p.timer = 1.5;
+      riders.splice(riders.indexOf(R), 1);
     }
   }
 }
@@ -713,7 +763,7 @@ function think(p, dt) {
   if (p.cheerT > 0) { p.cheerT -= dt; if (p.cheerT <= 0 && (p.pose === 'cheer' || p.pose === 'wave')) p.pose = p.state === 'lie' ? 'lie' : 'idle'; }
   if (p.evade) return;
   if (p.state === 'lie') { if (p.towel) { p.target = null; p.pose = p.cheerT > 0 ? 'cheer' : 'lie'; } return; }
-  if (p.state === 'swim') { if (!p.target) { p.state = 'wander'; p.timer = 1 + Math.random() * 2; } if (p.hot) cool(p); return; }
+  if (p.state === 'swim') { if (!p.target) { p.state = 'wander'; p.dropRing(); p.timer = 1 + Math.random() * 2; } if (p.hot) cool(p); return; }
   if (p.state !== 'wander') return;
   if (p.swimming && p.hot) cool(p);
   if (p.hot) { p.target = null; p.pose = 'fan'; return; }
@@ -795,4 +845,4 @@ if (q.get('zoom')) { world.camera.zoom = +q.get('zoom'); world.camera.updateProj
 if (q.get('turn')) for (let i = 0; i < +q.get('turn'); i++) { world.turn(1); for (let k = 0; k < 20; k++) world.step(0.05); }
 if (q.get('sim')) { const n = +q.get('sim') * 30; for (let i = 0; i < n; i++) update(1 / 30); }
 world.start();
-window.__game = { world, car, people, M, update, setTarget, toggleBand, sendToSlide, clearance, PR, pad, stepAside, balls, jobs: done, setRide, safety, counts };
+window.__game = { riders, queue, world, car, people, M, update, setTarget, toggleBand, sendToSlide, clearance, PR, pad, stepAside, balls, jobs: done, setRide, safety, counts };
