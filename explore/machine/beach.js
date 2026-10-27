@@ -88,7 +88,7 @@ export function makeBeach(scene) {
     scene.add(farSea);
   }
   // ---------------------------------------------------------------- the land behind: promenade, road, houses (one mesh, colours baked in)
-  const props = [];
+  const props = [], windows = [], lamps = [];
   {
     props.push(paint(at(new THREE.BoxGeometry(400, 1.0, 9), 0, 0.5, PROM + 4.5), '#e8e1d4'));            // promenade
     props.push(paint(at(new THREE.BoxGeometry(400, 0.3, 0.6), 0, 1.15, PROM + 0.3), '#d3cabb'));           // its kerb
@@ -106,12 +106,12 @@ export function makeBeach(scene) {
       props.push(paint(at(new THREE.BoxGeometry(7, h, 7), x, 1 + h / 2, z), cc));
       const roof = new THREE.Shape(); roof.moveTo(-3.8, 0); roof.lineTo(3.8, 0); roof.lineTo(0, 2.4);
       props.push(paint(at(new THREE.ExtrudeGeometry(roof, { depth: 7.4, bevelEnabled: false }), x, 1 + h, z - 3.7), i % 2 ? '#8e98a6' : '#c97b63'));
-      for (let fy = 2.6; fy < h - 0.5; fy += 2.3) for (const fx of [-2, 0, 2]) props.push(paint(at(new THREE.BoxGeometry(1.0, 1.2, 0.1), x + fx, 1 + fy, z - 3.52), '#5b7ea3'));
+      for (let fy = 2.6; fy < h - 0.5; fy += 2.3) for (const fx of [-2, 0, 2]) windows.push(at(new THREE.BoxGeometry(1.0, 1.2, 0.1), x + fx, 1 + fy, z - 3.52));
     }
     // lamp posts
     for (let x = -54; x <= 54; x += 12) {
       props.push(paint(at(new THREE.CylinderGeometry(0.1, 0.12, 4.2, 6), x, 3.1, PROM + 1.6), '#3f6f9f'));
-      props.push(paint(at(new THREE.SphereGeometry(0.32, 8, 6), x, 5.3, PROM + 1.6), '#fff3c4'));
+      lamps.push(at(new THREE.SphereGeometry(0.32, 8, 6), x, 5.3, PROM + 1.6));
     }
   }
   // ---------------------------------------------------------------- beach huts facing the sea
@@ -166,6 +166,12 @@ export function makeBeach(scene) {
     props.push(paint(at(new THREE.BoxGeometry(2.4, 0.9, 0.1), x, 2.4, z - 1.12), '#5b7ea3'));
     props.push(paint(at(new THREE.SphereGeometry(0.5, 10, 8), x, 4.6, z), '#ffd8a8'));
   }
+  // windows and lamps light up at night (setNight)
+  const winMat = new THREE.MeshStandardMaterial({ color: '#5b7ea3', emissive: '#ffd27a', emissiveIntensity: 0, roughness: 0.4 });
+  const lampMat = new THREE.MeshStandardMaterial({ color: '#fff3c4', emissive: '#ffcf70', emissiveIntensity: 0.2, roughness: 0.4 });
+  const strip = g => { g = g.index ? g.toNonIndexed() : g; for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k); return g; };
+  scene.add(new THREE.Mesh(mergeGeometries(windows.map(strip)), winMat), new THREE.Mesh(mergeGeometries(lamps.map(strip)), lampMat));
+  B.setNight = k => { winMat.emissiveIntensity = k * 1.4; winMat.color.set(k > 0.5 ? '#3b4a60' : '#5b7ea3'); lampMat.emissiveIntensity = 0.2 + k * 2.4; };
   const propMesh = new THREE.Mesh(mergeGeometries(props), MAT);
   propMesh.castShadow = true; propMesh.receiveShadow = true; propMesh.name = 'props';
   scene.add(propMesh);

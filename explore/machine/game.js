@@ -3,10 +3,13 @@
 // arrows, or ride behind it. Its tricks: people queue, climb up and whoosh down the slide (into the sea if you have
 // backed it in); the band plays under coloured lights and a crowd gathers to dance; the fountains spray and cool down
 // anyone who is too hot. Tap the slide, the stage, an arm, the flower or the shade to make them go; tap a person to say hi.
+// Night: a switch turns the beach to night, and the machine lights up (the glass between its bands, the slide, the
+// flower, the screen and the lights over the stage, the fountains). It moves like a real machine: the fountain arms
+// fold up to drive and down to spray, the shade closes like a flower to drive, and the stage turns while the band plays.
 // Safety: the machine never moves into anyone. Before every move it checks where everyone is; people in its way
 // step aside (a yellow ! over them), and if someone is still in the way it stops and waits. It beeps when reversing,
 // and it will not move while anyone is on the ladder or the slide.
-// Test params: ?at=x,z,heading  ?drive=x,z  ?auto=band,spray,slide,hot,ride  ?sim=seconds (run the world on before
+// Test params: ?at=x,z,heading  ?drive=x,z  ?auto=band,spray,slide,hot,ride,night  ?sim=seconds (run the world on before
 //              showing)  ?people=16  ?fps  ?mute  ?quiet (no reading aloud)  ?zoom=2  ?turn=1  ?clean (no buttons)
 import * as THREE from 'three';
 import { World } from './world.js';
@@ -26,6 +29,7 @@ app.innerHTML = `
     <div class="acts">
       <a class="ab" href="../sheets/machine-plans.html">📐 <span>Plans</span></a>
       <a class="ab" href="../sheets/my-machine.html">📷 <span>Photos</span></a>
+      <button class="ab round" data-a="night" aria-label="Day or night">🌙</button>
       <button class="ab round" data-a="voice" aria-label="Read aloud on or off">🗣️</button>
       <button class="ab round" data-a="sound" aria-label="Sound on or off">🔊</button>
     </div>
@@ -213,7 +217,6 @@ function drive(dt) {
   const speed = Math.min(1, (Math.abs(car.v) + Math.abs(car.w) * 2) / 3.2);
   sound.engine(speed);
   if (car.v < -0.2 && (beepT -= dt) <= 0) { beepT = 0.75; sound.beep(); }
-  trackMarks(dt);
   // spray from the tracks in the water
   if (speed > 0.15) for (const [lx, lz] of [[2.2, 2.6], [-2.2, 2.6], [2.2, -3.6], [-2.2, -3.6]]) {
     const p = toWorld(lx, 0, lz);
@@ -221,40 +224,6 @@ function drive(dt) {
   }
   if (dNow > 0.5 && !seaHinted) { seaHinted = true; hint('Splash! You are in the sea. Press Slide and the swimmers whoosh into the water.', 6); }
   parkedT = speed < 0.05 ? parkedT + dt : 0;
-}
-
-// ---------------------------------------------------------------- track marks in the sand (they fade as the sand dries)
-const MARKS = 360;
-const markTex = (() => {
-  const c = document.createElement('canvas'); c.width = 64; c.height = 32; const g = c.getContext('2d');
-  g.fillStyle = '#ffffff'; g.fillRect(0, 0, 64, 32); g.fillStyle = '#9a9a9a';
-  for (let x = 2; x < 64; x += 16) g.fillRect(x, 3, 9, 26);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
-})();
-const marks = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.5, 1.15).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#ffffff', map: markTex, transparent: true, premultipliedAlpha: true, blending: THREE.MultiplyBlending, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }), MARKS);
-marks.renderOrder = 1; marks.frustumCulled = false; world.scene.add(marks);
-const markAge = new Float32Array(MARKS).fill(999), mCol = new THREE.Color();
-for (let i = 0; i < MARKS; i++) { marks.setMatrixAt(i, new THREE.Matrix4().makeScale(0, 0, 0)); marks.setColorAt(i, mCol.setRGB(1, 1, 1)); }
-let markNext = 0, markDist = 0, markFade = 0;
-function trackMarks(dt) {
-  markDist += Math.abs(car.v) * dt;
-  if (markDist > 0.48) {
-    markDist = 0;
-    const lz = car.v > 0 ? -3.9 : 2.7;
-    for (const lx of [2.2, -2.2]) {
-      const [x, z] = worldXZ(lx, lz), y = ground(x, z);
-      if (y < WATER + 0.03) continue;                           // (the sea washes them away)
-      const i = markNext; markNext = (markNext + 1) % MARKS;
-      const m = new THREE.Matrix4().makeRotationY(car.h + Math.PI / 2); m.setPosition(x, y + 0.03, z);
-      marks.setMatrixAt(i, m); markAge[i] = 0;
-    }
-    marks.instanceMatrix.needsUpdate = true;
-  }
-  if ((markFade -= dt) <= 0) {
-    markFade = 0.3;
-    for (let i = 0; i < MARKS; i++) { markAge[i] += 0.3; const k = Math.min(1, markAge[i] / 45); marks.setColorAt(i, mCol.setScalar(0.74 + 0.26 * k)); }
-    marks.instanceColor.needsUpdate = true;
-  }
 }
 
 // ---------------------------------------------------------------- water drops: the fountains, the misters, splashes
@@ -286,15 +255,17 @@ function updateDrops(dt) {
   drops.instanceMatrix.needsUpdate = true;
 }
 let spraying = false, sprayAcc = 0;
+const tipW = new THREE.Vector3();
 function spray(dt) {
-  if (!spraying) return;
+  sound.spray(spraying && armFold < 0.15);
+  if (!spraying || armFold > 0.15) return;                     // (the arms must be down)
   sprayAcc += dt * 60;
   const dir = new THREE.Vector3(), up = new THREE.Vector3();
   while (sprayAcc >= 1) {
     sprayAcc -= 1;
     for (const n of P.nozzles) {
-      const p = toWorld(n.x, n.y, n.z), e = 0.5 + Math.random() * 0.25, sp = 5 + Math.random() * 1.6, side = (Math.random() - 0.5) * 0.5;
-      dir.set(n.dir * Math.cos(e), Math.sin(e), side).multiplyScalar(sp).transformDirection(M.matrixWorld).multiplyScalar(sp);
+      const p = n.tip.getWorldPosition(tipW), e = 0.5 + Math.random() * 0.25, sp = 5 + Math.random() * 1.6, side = (Math.random() - 0.5) * 0.5;
+      dir.set(n.dir * Math.cos(e), Math.sin(e), side).transformDirection(n.tip.matrixWorld).multiplyScalar(sp);
       emit(p.x, p.y, p.z, dir.x, dir.y, dir.z, 3, 1);
     }
     // misters under the band over the stage: a fine drizzle in front of it
@@ -305,7 +276,7 @@ function spray(dt) {
     }
   }
 }
-function setSpray(on) { spraying = on; sound.ensure(); sound.spray(on); $('[data-a="spray"]').classList.toggle('on', on); if (on) hint('Whoosh! The fountains spray from the four arms. Drive close to anyone who is too hot.', 5); }
+function setSpray(on) { spraying = on; sound.ensure(); $('[data-a="spray"]').classList.toggle('on', on); if (on) hint(armFold > 0.15 ? 'The arms come down when the machine stops, then the fountains spray.' : 'Whoosh! The fountains spray from the four arms. Drive close to anyone who is too hot.', 5); }
 const ripples = [];
 for (let i = 0; i < 12; i++) {
   const r = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.55, 36).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0, depthWrite: false }));
@@ -670,7 +641,7 @@ function placeChase(k) {
 // ---------------------------------------------------------------- tapping things
 function tap(cx, cy) {
   const ray = world.rayFrom(cx, cy);
-  const hit = ray.intersectObjects([M, ...people.map(p => p.g), ...balls.map(b => b.m)], true).find(h => h.object.visible && !h.object.isSprite && h.object !== marks);
+  const hit = ray.intersectObjects([M, ...people.map(p => p.g), ...balls.map(b => b.m)], true).find(h => h.object.visible && !h.object.isSprite);
   if (hit) {
     const ball = balls.find(b => b.m === hit.object);
     if (ball) { ball.v.set((Math.random() - 0.5) * 3, 5, (Math.random() - 0.5) * 3); sound.bonk(); return; }
@@ -682,11 +653,11 @@ function tap(cx, cy) {
       return;
     }
     let part = null;
-    for (let o = hit.object; o && o !== M; o = o.parent) if (['slide', 'stage', 'nozzles', 'flower', 'parasol', 'tracks', 'body'].includes(o.name)) { part = o.name; break; }
+    for (let o = hit.object; o && o !== M; o = o.parent) if (['slide', 'stage', 'arms', 'flower', 'parasol', 'tracks', 'body'].includes(o.name)) { part = o.name; break; }
     const local = M.worldToLocal(hit.point.clone());
     if (part === 'slide' || (part === 'body' && local.z < -3.2)) return ACTS.slide();
     if (part === 'stage') return ACTS.band();
-    if (part === 'nozzles' || (part === 'body' && Math.abs(local.x) > 1.9 && local.y > 4.1)) return ACTS.spray();
+    if (part === 'arms' || (part === 'body' && Math.abs(local.x) > 1.9 && local.y > 4.1)) return ACTS.spray();
     if (part === 'flower') { spin = 3; sound.whoosh(); return; }
     if (part === 'parasol') { twirl = 1; sound.pop(); return; }
     if (part) return ACTS.horn();
@@ -705,6 +676,61 @@ const shade = new THREE.Group();
   const pa = M.userData.parts.parasol, mastX = -3, mastZ = -9;
   shade.position.set(mastX, 0, mastZ); pa.add(shade);
   for (const c of [...pa.children]) if (c !== shade) { shade.attach(c); }
+}
+
+// ---------------------------------------------------------------- it moves like a real machine: arms, shade, stage
+let armFold = 0, shadeFold = 0, turnT = 0;
+function machineMoves(dt) {
+  const driving = Math.abs(car.v) > 0.12 || Math.abs(car.w) > 0.08 || pad.f || pad.t || car.target;
+  armFold = THREE.MathUtils.clamp(armFold + (driving ? 1 : -1) * dt * 1.1, 0, 1);
+  shadeFold = THREE.MathUtils.clamp(shadeFold + (driving ? 1 : -1) * dt * 0.8, 0, 1);
+  const ease = t => t * t * (3 - 2 * t);
+  for (const a of M.userData.arms) a.pivot.rotation.z = a.side * ease(armFold) * 1.25;
+  for (const pt of M.userData.petals) pt.pivot.quaternion.setFromAxisAngle(pt.axis, ease(shadeFold) * 1.2);
+  const tt = M.userData.parts.turntable;
+  if (bandOn) { turnT += dt; tt.rotation.y = Math.sin(turnT * 0.35) * 0.55; } else { tt.rotation.y *= Math.pow(0.2, dt); turnT = 0; }
+}
+
+// ---------------------------------------------------------------- night on the beach
+let nightOn = false, night = 0, scrT = 0;
+const DAY = { hemi: new THREE.Color('#ffffff'), ground: new THREE.Color('#e6dfd0'), sun: new THREE.Color('#fff4e2'), fog: new THREE.Color('#eaf2ee') };
+const NIGHT = { hemi: new THREE.Color('#6c7fc4'), ground: new THREE.Color('#1b2240'), sun: new THREE.Color('#a8bcff'), fog: new THREE.Color('#0e1630') };
+const daySky = world.scene.background, nightSky = (() => {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 512; const g = c.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, '#060a1f'); gr.addColorStop(0.65, '#14204a'); gr.addColorStop(1, '#2a3566');
+  g.fillStyle = gr; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 260; i++) { g.fillStyle = `rgba(255,255,255,${(0.3 + Math.random() * 0.7).toFixed(2)})`; const r = Math.random() < 0.08 ? 1.6 : 0.8; g.beginPath(); g.arc(Math.random() * 512, Math.random() * 330, r, 0, 7); g.fill(); }
+  g.fillStyle = '#fdf6dc'; g.beginPath(); g.arc(400, 90, 26, 0, 7); g.fill(); g.fillStyle = '#060a1f'; g.beginPath(); g.arc(412, 82, 22, 0, 7); g.fill();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+const GL = M.userData.glow, dropMat = drops.material;
+function updateNight(dt) {
+  night = THREE.MathUtils.clamp(night + (nightOn ? 1 : -1) * dt * 0.6, 0, 1);
+  const k = night * night * (3 - 2 * night), beat = sound.beat(), pulse = bandOn ? 0.5 + 0.5 * Math.cos((beat % 1) * Math.PI * 2) : 0.5;
+  world.hemi.intensity = THREE.MathUtils.lerp(1.62, 0.42, k); world.hemi.color.lerpColors(DAY.hemi, NIGHT.hemi, k); world.hemi.groundColor.lerpColors(DAY.ground, NIGHT.ground, k);
+  world.sun.intensity = THREE.MathUtils.lerp(1.95, 0.45, k); world.sun.color.lerpColors(DAY.sun, NIGHT.sun, k);
+  world.scene.fog.color.lerpColors(DAY.fog, NIGHT.fog, k);
+  world.scene.environmentIntensity = THREE.MathUtils.lerp(1, 0.3, k);
+  world.scene.background = k > 0.5 ? nightSky : daySky;
+  GL.reveals.forEach((m, i) => { m.emissiveIntensity = k * (0.9 + 0.9 * (bandOn ? Math.max(0, Math.cos(((beat + i * 0.25) % 1) * Math.PI * 2)) : 0.4)); });
+  GL.slide.emissiveIntensity = k * 1.6; GL.flower.emissiveIntensity = k * 0.8; GL.hub.emissiveIntensity = k * 1.2;
+  GL.head.emissiveIntensity = 0.25 + k * 2.2; GL.fender.emissiveIntensity = 0.3 + k * 1.8;
+  GL.nozzle.emissiveIntensity = k * (spraying ? 2.2 : 1.1) + (spraying ? 0.4 : 0);
+  dropMat.emissive.set('#4fd8ff'); dropMat.emissiveIntensity = k * 0.9;
+  beach.setNight?.(k);
+  for (const c of beams) if (c.visible) c.material.opacity *= 1 + k * 0.9;
+  // the screen over the stage: dancing bars with the band, slow colour waves without
+  if ((scrT -= dt) <= 0) {
+    scrT = 1 / 15;
+    const { canvas, tex } = M.userData.screen, g = canvas.getContext('2d'), cs = ['#ff5fa2', '#ffd23f', '#4fd8ff', '#9dff5c', '#b48cff'];
+    g.fillStyle = '#0b0e17'; g.fillRect(0, 0, 256, 48);
+    const now = performance.now() / 1000;
+    for (let i = 0; i < 32; i++) {
+      const h = bandOn ? 6 + 36 * Math.abs(Math.sin(beat * Math.PI * (1 + (i % 5) * 0.5) + i * 0.7)) * (0.55 + 0.45 * pulse) : 6 + 10 * (0.5 + 0.5 * Math.sin(now * 1.5 + i * 0.4));
+      g.fillStyle = cs[(i + Math.floor(bandOn ? beat : now)) % 5]; g.fillRect(3 + i * 7.9, 46 - h, 5.5, h);
+    }
+    tex.needsUpdate = true;
+  }
 }
 
 // ---------------------------------------------------------------- one step of the world
@@ -731,6 +757,8 @@ function update(dt) {
   heatUp(dt);
   updateSlide(dt);
   updateBand(dt);
+  machineMoves(dt);
+  updateNight(dt);
   for (const p of people) { think(p, dt); p.update(dt, ctx); if (onBeach(p)) keepOut(p); }
   marker.scale.setScalar(1 + Math.sin(performance.now() / 180) * 0.08);
   if (hintT > 0) { hintT -= dt; if (hintT <= 0) hintEl.textContent = ''; }
@@ -773,6 +801,7 @@ const ACTS = {
   zoomOut: () => { world.camera.zoom = Math.max(0.7, world.camera.zoom / 1.25); world.camera.updateProjectionMatrix(); },
   follow: () => { follow = !follow; $('[data-a="follow"]').classList.toggle('on', follow); },
   ride: () => setRide(!riding),
+  night: () => { nightOn = !nightOn; $('[data-a="night"]').textContent = nightOn ? '☀️' : '🌙'; hint(nightOn ? 'Night on the beach! Look at the machine light up. Try the band!' : 'Good morning!', 4); },
   sound: () => { sound.setOn(!sound.on); $('[data-a="sound"]').textContent = sound.on ? '🔊' : '🔇'; },
   voice: () => { voiceOn = !voiceOn; store.set('voice', voiceOn); $('[data-a="voice"]').classList.toggle('off', !voiceOn); if (voiceOn) { lastSaid = ''; say('I will read the messages out loud.'); } else speechSynthesis?.cancel(); },
 };
@@ -786,6 +815,7 @@ for (const a of (q.get('auto') || '').split(',').filter(Boolean)) {
   if (a === 'slide') sendToSlide();
   if (a === 'hot') people.slice(4, 8).forEach(p => { p.hot = true; p.showIcon('hot'); p.pose = 'fan'; });
   if (a === 'ride') setRide(true);
+  if (a === 'night') { nightOn = true; night = 1; $('[data-a="night"]').textContent = '☀️'; }
 }
 if (q.has('clean')) { $('.ui').hidden = true; hintEl.textContent = ''; }
 if (q.get('zoom')) { world.camera.zoom = +q.get('zoom'); world.camera.updateProjectionMatrix(); }
