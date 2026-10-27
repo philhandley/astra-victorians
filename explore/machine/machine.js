@@ -9,7 +9,8 @@
 // The machine:
 //   tracks   two big crawler tracks (2.4 m tall): steel shoes with grousers, a toothed drive sprocket at the back,
 //            an idler at the front, road wheels and top rollers, under a green deck slab with rounded corners
-//   cabins   two courses of vertical-ribbed cladding (graphite, sand and bronze) round the changing cabins, open at
+//   cabins   two courses of beach-hut boards round the changing cabins, a bright colour and white in turn (the LEGO's
+//            dark grey, brown and tan become blue, coral and sunshine yellow), with round windows; open at
 //            the front for the stage
 //   bands    five more courses stepping in, each a continuous band with soft edges and panels in the model's colours;
 //            a glass ribbon along the left; the rooftop pavilion in light aqua, yellow and azure
@@ -187,13 +188,32 @@ function ribs() {
   ribTex.wrapS = ribTex.wrapT = THREE.RepeatWrapping; ribTex.repeat.set(2, 1);
   return ribTex;
 }
+// the changing cabins as beach huts: boards in a bright colour and white in turn, two boards to a stud
+export const HUT = { dgrey: '#2f86eb', brown: '#ff6257', tan: '#ffc53d' };
+const hutMats = new Map();
+function hutMat(hex) {
+  if (hutMats.has(hex)) return hutMats.get(hex);
+  const cv = document.createElement('canvas'); cv.width = 128; cv.height = 4;
+  const g = cv.getContext('2d');
+  for (const [x0, fill] of [[0, hex], [64, '#fbf8f0']]) {
+    g.fillStyle = fill; g.fillRect(x0, 0, 64, 4);
+    const sh = g.createLinearGradient(x0, 0, x0 + 64, 0);                       // each board rounded, darker at its edges
+    sh.addColorStop(0, 'rgba(0,0,0,0.3)'); sh.addColorStop(0.14, 'rgba(255,255,255,0.14)'); sh.addColorStop(0.6, 'rgba(0,0,0,0)');
+    sh.addColorStop(0.86, 'rgba(0,0,0,0.1)'); sh.addColorStop(1, 'rgba(0,0,0,0.3)');
+    g.fillStyle = sh; g.fillRect(x0, 0, 64, 4);
+  }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
+  const m = new THREE.MeshStandardMaterial({ map: t, bumpMap: ribs(), bumpScale: 2.5, roughness: 0.34, metalness: 0.05, envMapIntensity: 0.7 });
+  hutMats.set(hex, m);
+  return m;
+}
 let BAND_MATS = null;
 function bandMats() {
   if (BAND_MATS) return BAND_MATS;
   BAND_MATS = {
     paint: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.18, envMapIntensity: 0.85 }),
     rib: new THREE.MeshStandardMaterial({ vertexColors: true, map: ribs(), bumpMap: ribs(), bumpScale: 2.5, roughness: 0.5, metalness: 0.25, envMapIntensity: 0.6 }),
-    glass: new THREE.MeshStandardMaterial({ color: COL.clear, roughness: 0.05, metalness: 0.4, envMapIntensity: 1.3 }),
+    glass: new THREE.MeshStandardMaterial({ color: '#3d86b8', roughness: 0.06, metalness: 0.35, envMapIntensity: 1.5 }),     // (sky-blue glass)
   };
   return BAND_MATS;
 }
@@ -221,7 +241,7 @@ function courseMeshes(bricks, y0, group, { glow = null, stripe = false } = {}) {
     for (const [dx, dz] of [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]]) if (cells.has(`${cx + dx},${cz + dz}`)) return cells.get(`${cx + dx},${cz + dz}`);
     return null;
   };
-  const kinds = { paint: { p: [], n: [], c: [], u: [] }, rib: { p: [], n: [], c: [], u: [] }, glass: { p: [], n: [], c: [], u: [] } };
+  const kinds = { paint: { p: [], n: [], c: [], u: [] }, glass: { p: [], n: [], c: [], u: [] } };
   const seams = [];                                                                // [x, y, z, turn, length, 'v' up a side | 'h' across a top]
   for (const [key, k] of cells) {
     const [x, z] = key.split(',').map(Number);
@@ -237,9 +257,9 @@ function courseMeshes(bricks, y0, group, { glow = null, stripe = false } = {}) {
     const vert = v => ({ p: new THREE.Vector3().fromBufferAttribute(pos, v), n: new THREE.Vector3().fromBufferAttribute(nor, v), u: new THREE.Vector2().fromBufferAttribute(uv, v) });
     const emit = (tri, cx, cz) => {
       const k = at(cx, cz);
-      const kind = !k ? 'paint' : k.col === 'clear' ? 'glass' : k.kind === 'm' ? 'rib' : 'paint';
+      const kind = !k ? 'paint' : k.col === 'clear' ? 'glass' : k.kind === 'm' ? `hut:${HUT[k.col] || COL[k.col]}` : 'paint';
       col.set(k ? COL[k.col] : COL.white).convertSRGBToLinear();
-      const o = kinds[kind];
+      const o = kinds[kind] || (kinds[kind] = { p: [], n: [], c: [], u: [] });
       for (const w of tri) { o.p.push(w.p.x, w.p.y, w.p.z); o.n.push(w.n.x, w.n.y, w.n.z); o.c.push(col.r, col.g, col.b); o.u.push(w.u.x, w.u.y); }
     };
     for (let t = 0; t < pos.count; t += 3) {
@@ -302,7 +322,7 @@ function courseMeshes(bricks, y0, group, { glow = null, stripe = false } = {}) {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(o.p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(o.n, 3));
     g.setAttribute('color', new THREE.Float32BufferAttribute(o.c, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(o.u, 2));
-    const m = new THREE.Mesh(g, M[kind]); m.castShadow = true; m.receiveShadow = true; m.name = `band-${kind}`;
+    const m = new THREE.Mesh(g, kind.startsWith('hut:') ? hutMat(kind.slice(4)) : M[kind]); m.castShadow = true; m.receiveShadow = true; m.name = `band-${kind}`;
     group.add(m);
   }
 }
@@ -473,9 +493,9 @@ export function build({ band = true, rider = true, ladder = false, flume = false
   const glowMat = (hex, glowHex, o = {}) => new THREE.MeshStandardMaterial({ color: hex, emissive: glowHex, emissiveIntensity: 0, roughness: 0.3, envMapIntensity: 0.6, ...o });
   const GLOW_COLS = ['#4fd8ff', '#ff5fa2', '#ffd23f', '#9dff5c', '#b48cff', '#4fd8ff', '#ffffff'];
   const GLOW = {
-    reveals: GLOW_COLS.map(c => glowMat('#1b2630', c, { roughness: 0.08, metalness: 0.6, envMapIntensity: 1.4 })),
+    reveals: GLOW_COLS.map(c => glowMat(new THREE.Color('#1b2630').lerp(new THREE.Color(c), 0.6), c, { roughness: 0.1, metalness: 0.35, envMapIntensity: 1.2 })),
     slide: glowMat('#ffd0ea', '#ff5fa2', { roughness: 0.3 }), head: glowMat('#f4f8ff', '#ffffff', { roughness: 0.2 }), fender: glowMat('#fff1d6', '#ffcf70'),
-    nozzle: glowMat('#bfefff', '#4fd8ff'), flower: glowMat(COL.purple, '#b48cff', { roughness: 0.35 }), hub: glowMat(COL.lime, '#d8ff6a', { roughness: 0.35 }),
+    nozzle: glowMat('#bfefff', '#4fd8ff'), port: glowMat('#bfe6ff', '#ffc966', { roughness: 0.08, metalness: 0.3, envMapIntensity: 1.3 }), flower: glowMat(COL.purple, '#b48cff', { roughness: 0.35 }), hub: glowMat(COL.lime, '#d8ff6a', { roughness: 0.35 }),
   };
   // ------------------------------------------------ undercarriage
   const tr = part('tracks');
@@ -505,6 +525,14 @@ export function build({ band = true, rider = true, ladder = false, flume = false
   const byCourse = new Map();
   for (const k of bricks) { if (!byCourse.has(k.c)) byCourse.set(k.c, []); byCourse.get(k.c).push(k); }
   for (const [c, list] of byCourse) courseMeshes(list, C(c), body, { glow: GLOW.reveals[c - 1], stripe: c === 3 || c === 6 });
+  {                                                                              // a round window in each hut (they light up at night)
+    const ringG = new THREE.TorusGeometry(0.5, 0.09, 8, 28), glassG = new THREE.CircleGeometry(0.47, 28);
+    for (const k of bricks) if (k.c === 2 && k.kind === 'm' && k.x1 - k.x0 === 1) {
+      const sd = k.x0 > 0 ? 1 : -1, zc2 = (k.z0 + k.z1) / 2, y = C(2) + REV / 2, x = sd * 5;
+      const ring = new THREE.Mesh(ringG, mat(COL.white, { roughness: 0.25 })); ring.rotation.y = Math.PI / 2; ring.position.set(x + sd * 0.02, y, zc2); ring.castShadow = true; body.add(ring);
+      const gl = new THREE.Mesh(glassG, GLOW.port); gl.rotation.y = sd * Math.PI / 2; gl.position.set(x + sd * 0.01, y, zc2); body.add(gl);
+    }
+  }
   // the arms: each hinges at the body's side, folding up to drive and down to spray, with its fountain at the tip
   const armsG = part('arms'), arms = [];
   points.nozzles = [];

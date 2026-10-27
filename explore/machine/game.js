@@ -716,6 +716,7 @@ function updateNight(dt) {
   GL.slide.emissiveIntensity = k * 1.6; GL.flower.emissiveIntensity = k * 0.8; GL.hub.emissiveIntensity = k * 1.2;
   GL.head.emissiveIntensity = 0.25 + k * 2.2; GL.fender.emissiveIntensity = 0.3 + k * 1.8;
   GL.nozzle.emissiveIntensity = k * (spraying ? 2.2 : 1.1) + (spraying ? 0.4 : 0);
+  GL.port.emissiveIntensity = k * 1.6;
   dropMat.emissive.set('#4fd8ff'); dropMat.emissiveIntensity = k * 0.9;
   beach.setNight?.(k);
   for (const c of beams) if (c.visible) c.material.opacity *= 1 + k * 0.9;
